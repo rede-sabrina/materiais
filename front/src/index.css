@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body { @apply bg-white text-slate-800 antialiased; }
+}
+
+/* small helpers */
+.card { @apply bg-white rounded-xl shadow-soft p-4 }

@@ -1,0 +1,5 @@
+[
+  {"id":1,"nota":"NF-001","loja":"Loja Centro","status":"Pendente","data":"2026-04-20","items":[{"ean":"1234567890123","nome":"Produto A","quantidade":5},{"ean":"9876543210987","nome":"Produto B","quantidade":2}]},
+  {"id":2,"nota":"NF-002","loja":"Loja Norte","status":"Em análise","data":"2026-04-18","items":[{"ean":"1111111111111","nome":"Produto C","quantidade":1}]},
+  {"id":3,"nota":"NF-003","loja":"Loja Sul","status":"Coleta agendada","data":"2026-04-17","items":[{"ean":"2222222222222","nome":"Produto D","quantidade":3}]}
+]

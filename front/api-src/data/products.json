@@ -1,0 +1,5 @@
+[
+  {"ean":"1234567890123","nome":"Produto A","preco":12.5},
+  {"ean":"9876543210987","nome":"Produto B","preco":8.9},
+  {"ean":"1111111111111","nome":"Produto C","preco":5.0}
+]
