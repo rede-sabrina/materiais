@@ -34,10 +34,27 @@ module.exports = async function handler(req, res){
     return
   }
 
-  const appModule = global.__appModulePromise || (global.__appModulePromise = import('../api-src/app.js'))
-  const dbModule = global.__dbModulePromise || (global.__dbModulePromise = import('../api-src/config/db.js'))
+  const debug = String(process.env.DEBUG_ERRORS || '').toLowerCase() === 'true'
 
-  const [appMod, dbMod] = await Promise.all([appModule, dbModule])
+  let appMod, dbMod
+  try{
+    const appModule = global.__appModulePromise || (global.__appModulePromise = import('../api-src/app.js'))
+    const dbModule  = global.__dbModulePromise  || (global.__dbModulePromise  = import('../api-src/config/db.js'))
+    ;[appMod, dbMod] = await Promise.all([appModule, dbModule])
+  } catch(importErr){
+    // reset cached promises so next cold start retries
+    global.__appModulePromise = null
+    global.__dbModulePromise  = null
+    res.statusCode = 500
+    res.setHeader('Content-Type', 'application/json')
+    res.end(JSON.stringify({
+      ok: false,
+      error: 'module_import_failed',
+      ...(debug ? { message: importErr.message, stack: importErr.stack } : {})
+    }))
+    return
+  }
+
   const unwrapDefault = (mod) => {
     let cur = mod
     for(let i = 0; i < 2; i++){
@@ -60,7 +77,6 @@ module.exports = async function handler(req, res){
     }
     await ensureDb(connectDB)
   } catch(err){
-    const debug = String(process.env.DEBUG_ERRORS || '').toLowerCase() === 'true'
     res.statusCode = 500
     res.setHeader('Content-Type', 'application/json')
     const details = debug ? {
