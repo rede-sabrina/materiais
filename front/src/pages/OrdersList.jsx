@@ -22,6 +22,9 @@ export default function OrdersList(){
   const user = parseJwt(token)
   const isAdmin = user && user.role === 'ADMIN'
 
+  const [startDate, setStartDate] = useState('')
+  const [endDate, setEndDate] = useState('')
+
   useEffect(()=>{
     fetchOrders().then(setOrders).catch(()=>setOrders([]))
     fetchMe().then(setMe).catch(()=>setMe(null))
@@ -39,7 +42,15 @@ export default function OrdersList(){
     return me?.loja || me?.username || order.loja
   }
 
-  const sorted = [...orders].sort((a,b)=> new Date(b.createdAt||b.data||0) - new Date(a.createdAt||a.data||0))
+  // filter by date range (admin only UI, but apply for all)
+  const filteredByDate = orders.filter(o=> {
+    const date = new Date(o.createdAt||o.data)
+    if(startDate && date < new Date(startDate)) return false
+    if(endDate && date > new Date(endDate)) return false
+    return true
+  })
+
+  const sorted = [...filteredByDate].sort((a,b)=> new Date(b.createdAt||b.data||0) - new Date(a.createdAt||a.data||0))
   const totalPages = Math.max(1, Math.ceil(sorted.length / pageSize))
   const pageItems = sorted.slice((page-1)*pageSize, page*pageSize)
 
@@ -49,9 +60,41 @@ export default function OrdersList(){
     return d.toLocaleString()
   }
 
+  // Print grouped by store (admin only)
+  function printByStore(){
+    const groups = {}
+    sorted.forEach(o=>{
+      const store = resolveStore(o)
+      if(!groups[store]) groups[store] = []
+      groups[store].push(o)
+    })
+    let html = `<html><head><title>Pedidos por Loja</title><style>body{font-family:sans-serif;padding:20px;}h2{margin-top:40px;}table{border-collapse:collapse;width:100%;}th,td{border:1px solid #ccc;padding:8px;}</style></head><body>`
+    Object.entries(groups).forEach(([store, list])=>{
+      html += `<h2>Loja: ${store}</h2><table><tr><th>Número</th><th>Status</th><th>Data</th></tr>`
+      list.forEach(o=>{
+        html += `<tr><td>${o.numero}</td><td>${o.status}</td><td>${formatDate(o.createdAt||o.data)}</td></tr>`
+      })
+      html += `</table>`
+    })
+    html += `</body></html>`
+    const w = window.open('', '_blank')
+    w.document.write(html)
+    w.document.close()
+    w.print()
+  }
+
   return (
     <div className="space-y-4">
       <h2 className="text-xl font-semibold">Registro Pedidos</h2>
+      {isAdmin && (
+        <div className="flex items-center gap-4 mb-4">
+          <label className="text-sm">De:</label>
+          <input type="date" value={startDate} onChange={e=>setStartDate(e.target.value)} className="border px-2 py-1 rounded" />
+          <label className="text-sm">Até:</label>
+          <input type="date" value={endDate} onChange={e=>setEndDate(e.target.value)} className="border px-2 py-1 rounded" />
+          <button onClick={printByStore} className="px-3 py-1 bg-primary text-white rounded">Imprimir por Loja</button>
+        </div>
+      )}
       <div className="bg-white rounded-md shadow p-4">
         <table className="w-full text-left">
           <thead>
