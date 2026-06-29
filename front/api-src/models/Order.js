@@ -21,6 +21,7 @@ const OrderSchema = new mongoose.Schema({
     default: 'Pendente',
   },
   observacaoAdmin: { type: String, default: '' },
+  ownerId: { type: String, required: true }, // <-- quem criou o pedido
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date },
 })

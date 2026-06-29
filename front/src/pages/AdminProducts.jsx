@@ -31,6 +31,16 @@ async function deleteProductApi(codigo){
   return res.json()
 }
 
+// ATIVAR (voltar ao estoque)
+async function activateProductApi(codigo){
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/products/${codigo}/activate`,{
+    method:'PATCH',
+    headers:{'Content-Type':'application/json'}
+  })
+  if(!res.ok) throw new Error('activate product failed')
+  return res.json()
+}
+
 export default function AdminProducts(){
   const [products, setProducts] = useState([])
   const [newProd, setNewProd] = useState({ codigo:'', nome:'' })
@@ -81,11 +91,20 @@ export default function AdminProducts(){
     }catch(e){ console.error(e); alert('Erro ao excluir') }
   }
 
+  // ---------- ACTIVATE ----------
+  async function handleActivate(codigo){
+    try{
+      const updated = await activateProductApi(codigo)
+      setProducts(prev=>prev.map(p=>p.codigo===codigo?updated:p))
+      showModal({title:'Produto ativado',body:`Código ${codigo} está em estoque.`,confirmLabel:'Fechar'})
+    }catch(e){ console.error(e); alert('Erro ao ativar') }
+  }
+
   return (
     <div className="space-y-4">
       <h2 className="text-xl font-semibold">Gerenciar Produtos (ADMIN)</h2>
       <div className="card p-4">
-        {/* --- ADD FORM --- */}
+        {/* --- FORMULÁRIO DE ADIÇÃO --- */}
         <h3 className="font-medium mb-2">Adicionar novo produto</h3>
         <div className="flex items-center gap-2 mb-4">
           <input placeholder="Código" className="border px-2 py-1 rounded w-24"
@@ -94,7 +113,8 @@ export default function AdminProducts(){
           <input placeholder="Nome" className="border px-2 py-1 rounded w-48"
                  value={newProd.nome}
                  onChange={e=>setNewProd(p=>({ ...p, nome:e.target.value }))} />
-          <button onClick={handleAdd} className="px-3 py-1 bg-primary text-white rounded">Adicionar</button>
+          <button onClick={handleAdd}
+                  className="px-3 py-1 bg-primary text-white rounded">Adicionar</button>
         </div>
 
         <hr className="my-6" />
@@ -132,9 +152,13 @@ export default function AdminProducts(){
                     ) : (
                       <>
                         <button onClick={()=>startEdit(p)}
-                                className="px-2 py-1 border rounded text-sm">Editar</button>
+                                className="px-2 py-1 bg-primary text-white rounded text-sm">Editar</button>
                         <button onClick={()=>handleDelete(p.codigo)}
-                                className="px-2 py-1 border rounded text-sm">Excluir</button>
+                                className="px-2 py-1 bg-red-600 text-white rounded text-sm">Excluir</button>
+                        {p.active===false && (
+                          <button onClick={()=>handleActivate(p.codigo)}
+                                  className="px-2 py-1 bg-green-600 text-white rounded text-sm">Ativar</button>
+                        )}
                       </>
                     )}
                   </td>

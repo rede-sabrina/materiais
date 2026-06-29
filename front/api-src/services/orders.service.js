@@ -12,34 +12,36 @@ const orders = Array.isArray(ordersData) ? [...ordersData] : []
 
 export async function getAllOrders(filters = {}) {
   try {
-    if (OrderModel && OrderModel.find) {
-      const q = {}
-      if (filters.status) q.status = filters.status
-      if (filters.loja) q.loja = { $regex: filters.loja, $options: 'i' }
-      if (filters.startDate || filters.endDate) {
-        q.createdAt = {}
-        if (filters.startDate) {
-          const sd = new Date(filters.startDate)
-          if (!isNaN(sd)) q.createdAt.$gte = sd
-        }
-        if (filters.endDate) {
-          const ed = new Date(filters.endDate)
-          if (!isNaN(ed)) q.createdAt.$lte = ed
-        }
-        if (Object.keys(q.createdAt).length === 0) delete q.createdAt
-      }
-      const items = await OrderModel.find(q).lean()
-      if (filters.q) {
-        return items.filter(i => i.numero?.includes(filters.q) || (i.loja && i.loja.toLowerCase().includes(filters.q.toLowerCase())))
-      }
-      return items
+if (OrderModel && OrderModel.find) {
+  const q = {}
+  if (filters.status) q.status = filters.status
+  if (filters.loja) q.loja = { $regex: filters.loja, $options: 'i' }
+  if (filters.ownerId) q.ownerId = filters.ownerId   // filtro por dono do pedido
+  if (filters.startDate || filters.endDate) {
+    q.createdAt = {}
+    if (filters.startDate) {
+      const sd = new Date(filters.startDate)
+      if (!isNaN(sd)) q.createdAt.$gte = sd
     }
+    if (filters.endDate) {
+      const ed = new Date(filters.endDate)
+      if (!isNaN(ed)) q.createdAt.$lte = ed
+    }
+    if (Object.keys(q.createdAt).length === 0) delete q.createdAt
+  }
+  const items = await OrderModel.find(q).lean()
+  if (filters.q) {
+    return items.filter(i => i.numero?.includes(filters.q) || (i.loja && i.loja.toLowerCase().includes(filters.q.toLowerCase())))
+  }
+  return items
+}
   } catch (e) {}
 
   // fallback to in‑memory array
   let items = [...orders]
   if (filters.status) items = items.filter(i => i.status === filters.status)
   if (filters.loja) items = items.filter(i => i.loja.toLowerCase().includes(filters.loja.toLowerCase()))
+  if (filters.ownerId) items = items.filter(i => i.ownerId === filters.ownerId)
   if (filters.startDate || filters.endDate) {
     const sd = filters.startDate ? new Date(filters.startDate) : null
     const ed = filters.endDate ? new Date(filters.endDate) : null

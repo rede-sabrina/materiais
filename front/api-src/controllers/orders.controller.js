@@ -9,7 +9,10 @@ function generateOrderNumber() {
 
 export async function listOrders(req, res, next) {
   try {
-    const items = await getAllOrders(req.query)
+    const isAdmin = req.user && req.user.role === 'ADMIN'
+    const filter = { ...req.query }
+    if (!isAdmin) filter.ownerId = req.user.id || req.user.username
+    const items = await getAllOrders(filter)
     res.json(items)
   } catch (err) { next(err) }
 }
@@ -25,6 +28,8 @@ export async function getOrder(req, res, next) {
 export async function createNewOrder(req, res, next) {
   try {
     const payload = { ...req.body }
+    // acrescenta quem está criando o pedido
+    payload.ownerId = req.user.id || req.user.username
     if (!payload.numero) payload.numero = generateOrderNumber()
     const doc = await createOrder(payload)
     res.status(201).json(doc)
