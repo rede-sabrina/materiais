@@ -18,6 +18,7 @@ async function register(username, password, loja, email){
 }
 
 async function login(username, password){
+  console.log('Login attempt:', username)
   const user = await usersService.findUserByUsername(username)
   if(!user) throw new Error('Usuário não encontrado')
 

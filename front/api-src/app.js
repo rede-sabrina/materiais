@@ -12,17 +12,7 @@ const app = express();
 const frontendEnv = process.env.FRONTEND_URL || process.env.FRONTEND_URLS || 'http://localhost:5173'
 const allowedOrigins = Array.isArray(frontendEnv) ? frontendEnv : String(frontendEnv).split(',').map(s => s.trim()).filter(Boolean)
 const allowAll = allowedOrigins.includes('*')
-app.use(cors({
-    origin: (origin, callback) => {
-        if(!origin) return callback(null, true)
-        if(allowAll) return callback(null, true)
-        if(allowedOrigins.includes(origin)) return callback(null, true)
-        if(origin.includes('localhost')) return callback(null, true)
-        if(origin.endsWith('.vercel.app')) return callback(null, true)
-        return callback(new Error('CORS not allowed'))
-    },
-    credentials: true
-}))
+app.use(cors({ origin: allowedOrigins, credentials: true }))
 
 app.use(express.json())
 app.use(cookieParser())
