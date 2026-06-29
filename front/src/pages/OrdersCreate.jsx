@@ -106,8 +106,8 @@ export default function OrdersCreate(){
                     <td className="p-2 align-top">
                       <input type="checkbox" checked={!!sel.selected} onChange={e=>toggleSelect(p.ean, e.target.checked)} />
                     </td>
-                    <td className="p-2 align-top">{p.nome}</td>
                     <td className="p-2 align-top">{p.codigo || '—'}</td>
+                    <td className="p-2 align-top">{p.nome}</td>
                     <td className="p-2 align-top">
                       <input type="number" min="1" className="border px-2 py-1 rounded w-20" disabled={!sel.selected} value={sel.qty||''} onChange={e=>updateQty(p.ean, e.target.value)} />
                     </td>
