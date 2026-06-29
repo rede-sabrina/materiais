@@ -14,14 +14,17 @@ export async function register(req, res, next) {
 }
 
 export async function login(req, res, next) {
-	try {
-		const { username, password } = req.body;
-		if (!username || !password) return res.status(400).json({ message: 'username and password required' });
-		const data = await authService.login(username, password);
-		res.json(data);
-	} catch (err) {
-		res.status(401).json({ message: err.message || 'invalid credentials' });
-	}
+  try{
+    console.log('Login request body:', req.body);
+    const { username, password } = req.body;
+    if (!username || !password) return res.status(400).json({ message: 'username and password required' });
+    const data = await authService.login(username, password);
+    res.json(data);
+  } catch (err) {
+    console.error('Login error:', err);
+    res.status(500).json({ message: err.message || 'invalid credentials', stack: err.stack });
+  }
+}
 }
 
 export async function me(req, res, next){
