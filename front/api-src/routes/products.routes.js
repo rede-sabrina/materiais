@@ -7,6 +7,6 @@ router.get('/', listProducts)
 router.get('/:ean', getProduct)
 router.post('/', createProductSimple)
 router.patch('/:codigo', deactivateProduct)
-router.post('/', createProduct)
+
 
 export default router
