@@ -1,15 +1,10 @@
 import UserModel from '../models/User.js'
 import mongoose from 'mongoose'
 import { readFileSync } from 'fs'
-import { join, dirname } from 'path'
-import { fileURLToPath } from 'url'
+import { resolve } from 'path'
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
-
-const usersPath = join(__dirname, '../data/users.json')
 let usersData = []
-try { usersData = JSON.parse(readFileSync(usersPath, 'utf8')) } catch(e){ usersData = [] }
+try { usersData = JSON.parse(readFileSync(resolve('api-src/data/users.json'), 'utf8')) } catch(e){ usersData = [] }
 
 // in-memory fallback
 const users = Array.isArray(usersData) ? [...usersData] : []

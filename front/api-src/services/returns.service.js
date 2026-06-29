@@ -1,14 +1,9 @@
 import ReturnModel from '../models/Return.js'
 import { readFileSync } from 'fs'
-import { join, dirname } from 'path'
-import { fileURLToPath } from 'url'
+import { resolve } from 'path'
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
-
-const returnsPath = join(__dirname, '../data/returns.json')
 let returnsData = []
-try { returnsData = JSON.parse(readFileSync(returnsPath, 'utf8')) } catch(e){ returnsData = [] }
+try { returnsData = JSON.parse(readFileSync(resolve('api-src/data/returns.json'), 'utf8')) } catch(e){ returnsData = [] }
 
 // use in-memory array initialized from JSON as fallback
 const returns = Array.isArray(returnsData) ? [...returnsData] : []
