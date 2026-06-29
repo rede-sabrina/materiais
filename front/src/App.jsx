@@ -5,6 +5,7 @@ import DashboardHome from './pages/DashboardHome'
 import Reports from './pages/Reports'
 import ReturnsList from './pages/ReturnsList'
 import OrdersCreate from './pages/OrdersCreate'
+import NewOrder from './pages/NewOrder'
 import NewReturn from './pages/NewReturn'
 import ReturnDetail from './pages/ReturnDetail'
 import DashboardLayout from './layouts/DashboardLayout'
@@ -28,6 +29,7 @@ export default function App(){
           <Route path="admin/produtos" element={<AdminProducts/>} />
         <Route path="devolucoes" element={<ReturnsList/>} />
         <Route path="devolucoes/novo" element={<NewReturn/>} />
+          <Route path="pedidos" element={<NewOrder/>} />
           <Route path="pedidos/novo" element={<OrdersCreate/>} />
         <Route path="devolucoes/:id" element={<ReturnDetail/>} />
       </Route>

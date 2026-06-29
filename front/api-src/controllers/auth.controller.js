@@ -25,7 +25,6 @@ export async function login(req, res, next) {
     res.status(500).json({ message: err.message || 'invalid credentials', stack: err.stack });
   }
 }
-}
 
 export async function me(req, res, next){
 	try{

@@ -2,11 +2,20 @@ import React, { useEffect, useState } from 'react'
 import { useModal } from '../components/Modal'
 import { useNavigate } from 'react-router-dom'
 
+// Helper para obter token salvo na sessão
+function getToken() {
+  try { return sessionStorage.getItem('token') } catch(e) { return null }
+}
+
 // Helper para criar produto usando o endpoint que gera EAN internamente
 async function createProductApi({ codigo, nome }){
+  const token = getToken()
   const res = await fetch(`${import.meta.env.VITE_API_URL}/api/products`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+    },
     body: JSON.stringify({ codigo, nome })
   })
   if(!res.ok) throw new Error('create product failed')
@@ -15,9 +24,13 @@ async function createProductApi({ codigo, nome }){
 
 // Helper para desativar produto
 async function deactivateProductApi(codigo){
+  const token = getToken()
   const res = await fetch(`${import.meta.env.VITE_API_URL}/api/products/${codigo}`, {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' }
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+    }
   })
   if(!res.ok) throw new Error('deactivate failed')
   return res.json()
