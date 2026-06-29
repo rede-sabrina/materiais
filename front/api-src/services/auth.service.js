@@ -22,9 +22,10 @@ async function login(username, password){
   if(!user) throw new Error('Usuário não encontrado')
 
   // support both `password` (fallback) and `passwordHash` (mongoose)
-  const stored = user.password || user.passwordHash || user.passwordhash
-  const isValid = await bcrypt.compare(password, stored)
-  if(!isValid) throw new Error('Senha incorreta')
+   const stored = user.password || user.passwordHash || user.passwordhash
+   if (!stored) throw new Error('Senha incorreta')
+   const isValid = await bcrypt.compare(password, stored)
+   if(!isValid) throw new Error('Senha incorreta')
 
   const token = jwt.sign({ id: user.id, username: user.username, role: user.role, loja: user.loja }, process.env.JWT_SECRET || 'dev-secret', { expiresIn: '1d' })
   return { user: { id: user.id, username: user.username }, token }
