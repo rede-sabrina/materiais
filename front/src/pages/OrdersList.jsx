@@ -73,20 +73,24 @@ export default function OrdersList(){
                 <td className="p-2">
                   <button onClick={()=>navigate(`/pedidos/${o._id || o.id}`)} className="px-3 py-1 bg-primary text-white rounded text-sm hover:brightness-95 mr-2">Visualizar</button>
 { (isAdmin || (me && (o.ownerId === (me.id || me.username)))) && (
-  <button onClick={async()=>{
-    // confirm modal
-    const confirmed = window.confirm('Excluir este pedido?')
-    if(!confirmed) return
-    showModal({title:'Excluindo', loading:true, hideActions:true})
-    try{
-      await deleteOrder(o._id || o.id)
-      // remove from UI
-      setOrders(prev=>prev.filter(p=> (p._id||p.id) !== (o._id||o.id)))
-      showModal({title:'Pedido excluído', body:'Pedido removido com sucesso.', confirmLabel:'Fechar'})
-    }catch(e){
-      console.error(e)
-      showModal({title:'Erro', body:'Não foi possível excluir o pedido.', confirmLabel:'Fechar'})
-    }
+  <button onClick={()=>{
+    showModal({
+      title: 'Confirmar exclusão',
+      body: 'Deseja realmente excluir este pedido?',
+      confirmLabel: 'Excluir',
+      cancelLabel: 'Cancelar',
+      onConfirm: async () => {
+        showModal({title:'Excluindo', loading:true, hideActions:true})
+        try{
+          await deleteOrder(o._id || o.id)
+          setOrders(prev=>prev.filter(p=> (p._id||p.id) !== (o._id||o.id)))
+          showModal({title:'Pedido excluído', body:'Pedido removido com sucesso.', confirmLabel:'Fechar'})
+        }catch(e){
+          console.error(e)
+          showModal({title:'Erro', body:'Não foi possível excluir o pedido.', confirmLabel:'Fechar'})
+        }
+      }
+    })
   }} className="px-3 py-1 bg-red-600 text-white rounded text-sm hover:brightness-95">Excluir</button>
 )}
                 </td>
