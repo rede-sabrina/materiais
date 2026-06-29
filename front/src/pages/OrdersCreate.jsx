@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { fetchProducts, createOrder } from '../services/api'
+import { fetchProducts, createOrder, fetchMe } from '../services/api'
 import { useNavigate } from 'react-router-dom'
 import { useModal } from '../components/Modal'
 
@@ -11,6 +11,11 @@ export default function OrdersCreate(){
   const PAGE_SIZE = 15
   const nav = useNavigate()
   const { showModal } = useModal()
+  // obter loja corrente para incluir no pedido
+  const [store, setStore] = useState('')
+  useEffect(()=>{
+    fetchMe().then(user=>{ if(user){ setStore(user.loja || user.username) } }).catch(()=>{})
+  }, [])
 
   // load products once
   useEffect(()=>{
@@ -55,12 +60,12 @@ export default function OrdersCreate(){
     // mostra modal de carregamento
     showModal({ title:'Criando Pedido', loading:true, hideActions:true })
     try{
-      await createOrder({ itens: items })
+      await createOrder({ loja: store, itens: items })
       showModal({
         title: 'Pedido criado',
         body: 'Pedido registrado com sucesso.',
         confirmLabel: 'Fechar',
-        onConfirm: ()=> nav('/') // voltar ao dashboard
+        onConfirm: ()=> nav('/pedidos') // voltar à lista de pedidos
       })
     }catch(e){
       console.error(e)
@@ -88,8 +93,8 @@ export default function OrdersCreate(){
             <thead>
               <tr className="bg-slate-100 text-sm text-slate-700">
                 <th className="p-3 w-6"></th>
-                <th className="p-3">Nome</th>
                 <th className="p-3">Código</th>
+                <th className="p-3">Nome</th>
                 <th className="p-3">Quantidade</th>
               </tr>
             </thead>

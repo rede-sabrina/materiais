@@ -64,7 +64,7 @@ export default function Sidebar(){
         <nav>
           <Item to="/">Dashboard</Item>
           <Item to="/lembretes" badge={remindersCount > 0 ? remindersCount : null}>Lembretes</Item>
-          <Item to="/devolucoes">Registro Pedidos</Item>
+          <Item to="/pedidos">Registro Pedidos</Item>
           <Item to="/pedidos/novo">Novo Pedido</Item>
           {isAdmin && (
             <>
