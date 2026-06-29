@@ -57,4 +57,36 @@ export async function setProductActive(codigo, active){
   return null
 }
 
-export default { getAllProducts, getProductByEan, createNewProduct, setProductActive }
+// Update product fields (nome, codigo, quantidade)
+export async function updateProduct(codigo, updates){
+  try{
+    if(ProductModel && ProductModel.findOneAndUpdate){
+      const doc = await ProductModel.findOneAndUpdate({ codigo }, updates, { new:true }).lean()
+      return doc
+    }
+  }catch(e){}
+  const idx = products.findIndex(p=>p.codigo===codigo)
+  if(idx!==-1){
+    products[idx] = { ...products[idx], ...updates }
+    return products[idx]
+  }
+  return null
+}
+
+// Delete product
+export async function deleteProduct(codigo){
+  try{
+    if(ProductModel && ProductModel.findOneAndDelete){
+      await ProductModel.findOneAndDelete({ codigo })
+      return true
+    }
+  }catch(e){}
+  const idx = products.findIndex(p=>p.codigo===codigo)
+  if(idx!==-1){
+    products.splice(idx,1)
+    return true
+  }
+  return false
+}
+
+export default { getAllProducts, getProductByEan, createNewProduct, setProductActive, updateProduct, deleteProduct }
