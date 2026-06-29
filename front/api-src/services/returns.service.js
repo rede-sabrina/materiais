@@ -1,6 +1,10 @@
 import ReturnModel from '../models/Return.js'
 import { readFileSync } from 'fs'
-import { join } from 'path'
+import { join, dirname } from 'path'
+import { fileURLToPath } from 'url'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
 const returnsPath = join(__dirname, '../data/returns.json')
 let returnsData = []
