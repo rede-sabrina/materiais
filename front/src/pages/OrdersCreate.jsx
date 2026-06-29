@@ -19,12 +19,14 @@ export default function OrdersCreate(){
 
   // toggle checkbox
   function toggleSelect(ean, checked){
+    const product = products.find(p=>p.ean===ean) || {}
     setSelection(prev=>({
       ...prev,
       [ean]: {
         ...(prev[ean]||{}),
         selected: checked,
-        qty: checked ? (prev[ean]?.qty || 1) : ''
+        qty: checked ? (prev[ean]?.qty || 1) : '',
+        product
       }
     }))
   }
@@ -33,7 +35,7 @@ export default function OrdersCreate(){
     const qty = raw.replace(/[^0-9]/g,'')
     setSelection(prev=>({
       ...prev,
-      [ean]: { ...(prev[ean]||{}), qty }
+      [ean]: { ...(prev[ean]||{}), qty, product: prev[ean]?.product }
     }))
   }
 
@@ -41,15 +43,17 @@ export default function OrdersCreate(){
     const items = Object.entries(selection)
       .filter(([,v])=> v.selected && v.qty && Number(v.qty)>0)
       .map(([,v])=>({
-        ean: v.product.ean,
-        nome: v.product.nome,
-        codigo: v.product.codigo,
+        ean: v.product?.ean,
+        nome: v.product?.nome,
+        codigo: v.product?.codigo,
         quantidade: Number(v.qty)
       }))
     if(items.length===0){
       alert('Selecione ao menos um produto e informe a quantidade')
       return
     }
+    // mostra modal de carregamento
+    showModal({ title:'Criando Pedido', loading:true, hideActions:true })
     try{
       await createOrder({ itens: items })
       showModal({
@@ -60,7 +64,11 @@ export default function OrdersCreate(){
       })
     }catch(e){
       console.error(e)
-      alert('Erro ao criar pedido')
+      showModal({
+        title: 'Erro',
+        body: 'Erro ao criar pedido.',
+        confirmLabel: 'Fechar'
+      })
     }
   }
 

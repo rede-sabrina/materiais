@@ -31,7 +31,15 @@ async function deleteProductApi(codigo){
   return res.json()
 }
 
-// ATIVAR (voltar ao estoque)
+async function deactivateProductApi(codigo){
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/products/${codigo}`,{
+    method:'PATCH',
+    headers:{'Content-Type':'application/json'}
+  })
+  if(!res.ok) throw new Error('deactivate product failed')
+  return res.json()
+}
+
 async function activateProductApi(codigo){
   const res = await fetch(`${import.meta.env.VITE_API_URL}/api/products/${codigo}/activate`,{
     method:'PATCH',
@@ -42,9 +50,11 @@ async function activateProductApi(codigo){
 }
 
 export default function AdminProducts(){
+  const PER_PAGE = 15
   const [products, setProducts] = useState([])
   const [newProd, setNewProd] = useState({ codigo:'', nome:'' })
   const [editing, setEditing] = useState(null) // { codigo, nome }
+  const [page, setPage] = useState(1)
   const { showModal } = useModal()
 
   // Carrega lista de produtos
@@ -91,7 +101,15 @@ export default function AdminProducts(){
     }catch(e){ console.error(e); alert('Erro ao excluir') }
   }
 
-  // ---------- ACTIVATE ----------
+  // ---------- ACTIVATE / DEACTIVATE ----------
+  async function handleDeactivate(codigo){
+    try{
+      const updated = await deactivateProductApi(codigo)
+      setProducts(prev=>prev.map(p=>p.codigo===codigo?updated:p))
+      showModal({title:'Produto desativado',body:`Código ${codigo} marcado como inativo.`,confirmLabel:'Fechar'})
+    }catch(e){ console.error(e); alert('Erro ao desativar') }
+  }
+
   async function handleActivate(codigo){
     try{
       const updated = await activateProductApi(codigo)
@@ -100,11 +118,15 @@ export default function AdminProducts(){
     }catch(e){ console.error(e); alert('Erro ao ativar') }
   }
 
+  // ---------- PAGINAÇÃO ----------
+  const totalPages = Math.max(1, Math.ceil(products.length / PER_PAGE))
+  const pageItems = products.slice((page-1)*PER_PAGE, page*PER_PAGE)
+
   return (
     <div className="space-y-4">
       <h2 className="text-xl font-semibold">Gerenciar Produtos (ADMIN)</h2>
       <div className="card p-4">
-        {/* --- FORMULÁRIO DE ADIÇÃO --- */}
+        {/* ADIÇÃO */}
         <h3 className="font-medium mb-2">Adicionar novo produto</h3>
         <div className="flex items-center gap-2 mb-4">
           <input placeholder="Código" className="border px-2 py-1 rounded w-24"
@@ -118,7 +140,7 @@ export default function AdminProducts(){
         </div>
 
         <hr className="my-6" />
-        <h3 className="font-medium mb-2">Produtos cadastrados</h3>
+        <h3 className="font-medium mb-2">Produtos cadastrados (página {page}/{totalPages})</h3>
         <div className="overflow-x-auto">
           <table className="min-w-full text-left border-collapse">
             <thead>
@@ -130,7 +152,7 @@ export default function AdminProducts(){
               </tr>
             </thead>
             <tbody>
-              {products.map(p=>(
+              {pageItems.map(p=>(
                 <tr key={p.codigo || p.ean} className="border-t">
                   <td className="p-2">{p.codigo}</td>
                   <td className="p-2">
@@ -153,12 +175,16 @@ export default function AdminProducts(){
                       <>
                         <button onClick={()=>startEdit(p)}
                                 className="px-2 py-1 bg-primary text-white rounded text-sm">Editar</button>
-                        <button onClick={()=>handleDelete(p.codigo)}
-                                className="px-2 py-1 bg-red-600 text-white rounded text-sm">Excluir</button>
+                        {p.active!==false && (
+                          <button onClick={()=>handleDeactivate(p.codigo)}
+                                  className="px-2 py-1 bg-red-600 text-white rounded text-sm">Desativar</button>
+                        )}
                         {p.active===false && (
                           <button onClick={()=>handleActivate(p.codigo)}
                                   className="px-2 py-1 bg-green-600 text-white rounded text-sm">Ativar</button>
                         )}
+                        <button onClick={()=>handleDelete(p.codigo)}
+                                className="px-2 py-1 bg-red-600 text-white rounded text-sm">Excluir</button>
                       </>
                     )}
                   </td>
@@ -166,6 +192,17 @@ export default function AdminProducts(){
               ))}
             </tbody>
           </table>
+        </div>
+
+        {/* CONTROLES DE PAGINAÇÃO */}
+        <div className="flex justify-between mt-4">
+          <button disabled={page===1}
+                  onClick={()=>setPage(p=>Math.max(1,p-1))}
+                  className="px-3 py-1 border rounded disabled:opacity-50">Anterior</button>
+          <span className="self-center">Página {page} de {totalPages}</span>
+          <button disabled={page===totalPages}
+                  onClick={()=>setPage(p=>Math.min(totalPages,p+1))}
+                  className="px-3 py-1 border rounded disabled:opacity-50">Próxima</button>
         </div>
       </div>
     </div>
