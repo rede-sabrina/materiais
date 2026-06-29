@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { listOrders, getOrder, createNewOrder, patchOrder, changeStatus } from '../controllers/orders.controller.js'
+import { listOrders, getOrder, createNewOrder, patchOrder, changeStatus, deleteOrderCtrl } from '../controllers/orders.controller.js'
 import authMiddleware from '../middlewares/auth.middleware.js'
 import adminMiddleware from '../middlewares/admin.middleware.js'
 
@@ -9,10 +9,11 @@ const router = Router()
 router.use(authMiddleware)
 router.get('/', listOrders)
 router.post('/', createNewOrder)
+router.get('/:id', getOrder) // view order (owner or admin)
+router.delete('/:id', deleteOrderCtrl) // owner or admin can delete
 
-// Admin can view any order and change status
+// Admin can change status
 router.use(adminMiddleware)
-router.get('/:id', getOrder)
 router.patch('/:id', patchOrder)
 router.patch('/:id/status', changeStatus)
 

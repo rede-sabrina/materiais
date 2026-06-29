@@ -110,6 +110,14 @@ export async function fetchOrderById(id){
   return r ?? null
 }
 
+export async function updateOrderStatus(id, status){
+  const token = getToken()
+  const headers = {'Content-Type':'application/json', ...(token ? {'Authorization':`Bearer ${token}`} : {})}
+  const res = await fetch(`${API_BASE}/api/orders/${id}/status`, { method:'PATCH', headers, body: JSON.stringify({status}) })
+  if(!res.ok) throw new Error('update order status failed')
+  return res.json()
+}
+
 export async function createOrder(data){
   if(!API_BASE){
     const item = { ...data, id: Date.now(), createdAt: new Date().toISOString(), status: data.status || 'Pendente' }
@@ -122,6 +130,15 @@ export async function createOrder(data){
   const txt = await res.text()
   if(!txt) return {}
   try{ return JSON.parse(txt) } catch(e){ return {} }
+}
+
+export async function deleteOrder(id){
+  if(!API_BASE) return wait({ ok:true })
+  const token = getToken()
+  const headers = token ? { 'Authorization': `Bearer ${token}` } : undefined
+  const res = await fetch(`${API_BASE}/api/orders/${id}`, { method:'DELETE', headers })
+  if(!res.ok) throw new Error('delete order failed')
+  return res.json()
 }
 
 export async function deleteAuditEvents(params){

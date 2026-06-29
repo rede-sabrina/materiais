@@ -1,4 +1,4 @@
-import { createOrder, getAllOrders, getOrderById, updateOrder, updateOrderStatus } from '../services/orders.service.js'
+import { createOrder, getAllOrders, getOrderById, updateOrder, updateOrderStatus, deleteOrder } from '../services/orders.service.js'
 
 // Generate an easy‑to‑read order number, e.g. ORD-20240629-1234
 function generateOrderNumber() {
@@ -51,5 +51,19 @@ export async function changeStatus(req, res, next) {
     const updated = await updateOrderStatus(req.params.id, status)
     if (!updated) return res.status(404).json({ message: 'Pedido não encontrado' })
     res.json(updated)
+  } catch (err) { next(err) }
+}
+
+export async function deleteOrderCtrl(req, res, next) {
+  try {
+    const order = await getOrderById(req.params.id)
+    if (!order) return res.status(404).json({ message: 'Pedido não encontrado' })
+    const isAdmin = req.user && req.user.role === 'ADMIN'
+    const ownerId = order.ownerId
+    const userId = req.user.id || req.user.username
+    if (!isAdmin && ownerId !== userId) return res.status(403).json({ message: 'Não autorizado' })
+    const ok = await deleteOrder(req.params.id)
+    if (!ok) return res.status(500).json({ message: 'Falha ao excluir' })
+    res.json({ ok: true })
   } catch (err) { next(err) }
 }

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { fetchOrders, fetchMe, fetchUsers } from '../services/api'
+import { fetchOrders, fetchMe, fetchUsers, deleteOrder } from '../services/api'
 import Badge from '../components/Badge'
+import { useModal } from '../components/Modal'
 import Pagination from '../components/Pagination'
 
 export default function OrdersList(){
@@ -11,6 +12,7 @@ export default function OrdersList(){
   const [page, setPage] = useState(1)
   const pageSize = 15
   const navigate = useNavigate()
+  const { showModal } = useModal()
 
   // token parsing similar to ReturnsList to determine admin
   function parseJwt(token){
@@ -69,7 +71,24 @@ export default function OrdersList(){
                 <td className="p-2"><Badge>{o.status}</Badge></td>
                 <td className="p-2 text-sm text-slate-500">{formatDate(o.createdAt || o.data)}</td>
                 <td className="p-2">
-                  <button onClick={()=>navigate(`/pedidos/${o._id || o.id}`)} className="px-3 py-1 bg-primary text-white rounded text-sm hover:brightness-95">Visualizar</button>
+                  <button onClick={()=>navigate(`/pedidos/${o._id || o.id}`)} className="px-3 py-1 bg-primary text-white rounded text-sm hover:brightness-95 mr-2">Visualizar</button>
+{ (isAdmin || (me && (o.ownerId === (me.id || me.username)))) && (
+  <button onClick={async()=>{
+    // confirm modal
+    const confirmed = window.confirm('Excluir este pedido?')
+    if(!confirmed) return
+    showModal({title:'Excluindo', loading:true, hideActions:true})
+    try{
+      await deleteOrder(o._id || o.id)
+      // remove from UI
+      setOrders(prev=>prev.filter(p=> (p._id||p.id) !== (o._id||o.id)))
+      showModal({title:'Pedido excluído', body:'Pedido removido com sucesso.', confirmLabel:'Fechar'})
+    }catch(e){
+      console.error(e)
+      showModal({title:'Erro', body:'Não foi possível excluir o pedido.', confirmLabel:'Fechar'})
+    }
+  }} className="px-3 py-1 bg-red-600 text-white rounded text-sm hover:brightness-95">Excluir</button>
+)}
                 </td>
               </tr>
             ))}

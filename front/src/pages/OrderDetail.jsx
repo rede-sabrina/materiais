@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { fetchOrderById, fetchMe, fetchUsers } from '../services/api'
+import { fetchOrderById, fetchMe, fetchUsers, updateOrderStatus } from '../services/api'
 import Badge from '../components/Badge'
+import { useModal } from '../components/Modal'
 
 export default function OrderDetail(){
   const { id } = useParams()
@@ -46,6 +47,21 @@ export default function OrderDetail(){
       <div className="bg-white rounded-md shadow p-4">
         <p><strong>Loja:</strong> {resolveStore()}</p>
         <p><strong>Status:</strong> <Badge>{order.status}</Badge></p>
+        {isAdmin && order.status !== 'Concluído' && (
+          <button onClick={async()=>{
+            // loading modal
+            showModal({title:'Atualizando', loading:true, hideActions:true})
+            try{
+              await updateOrderStatus(order._id || order.id, 'Concluído')
+              // refresh state
+              setOrder(prev=>({...prev, status:'Concluído'}))
+              showModal({title:'Pedido finalizado', body:'Status alterado para Concluído.', confirmLabel:'Fechar'})
+            }catch(e){
+              console.error(e)
+              showModal({title:'Erro', body:'Não foi possível atualizar o pedido.', confirmLabel:'Fechar'})
+            }
+          }} className="mt-2 px-3 py-1 bg-green-600 text-white rounded text-sm">Pedido OK</button>
+        )}
         <p><strong>Data registro:</strong> {formatDate(order.createdAt || order.data)}</p>
         <h3 className="mt-4 font-medium">Itens</h3>
         <table className="w-full text-left mt-2">

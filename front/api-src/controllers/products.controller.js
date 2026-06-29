@@ -46,6 +46,15 @@ export async function deactivateProduct(req, res, next){
   }catch(err){ next(err) }
 }
 
+export async function activateProduct(req, res, next){
+  try{
+    const { codigo } = req.params
+    const updated = await setProductActive(codigo, true)
+    if(!updated) return res.status(404).json({ message: 'Produto não encontrado' })
+    res.json(updated)
+  }catch(err){ next(err) }
+}
+
 // EDITAR (PUT /api/products/:codigo)
 export async function updateProductCtrl(req, res, next){
   try{

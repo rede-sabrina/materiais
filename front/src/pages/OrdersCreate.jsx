@@ -13,8 +13,14 @@ export default function OrdersCreate(){
   const { showModal } = useModal()
   // obter loja corrente para incluir no pedido
   const [store, setStore] = useState('')
+  const [isAdmin, setIsAdmin] = useState(false)
   useEffect(()=>{
-    fetchMe().then(user=>{ if(user){ setStore(user.loja || user.username) } }).catch(()=>{})
+    fetchMe().then(user=>{ 
+      if(user){ 
+        setStore(user.loja || user.username)
+        setIsAdmin(user.role === 'ADMIN')
+      }
+    }).catch(()=>{})
   }, [])
 
   // load products once
@@ -77,7 +83,7 @@ export default function OrdersCreate(){
     }
   }
 
-  const filtered = products.filter(p=> p.nome?.toLowerCase().includes(query.toLowerCase()))
+  const filtered = products.filter(p=> p.nome?.toLowerCase().includes(query.toLowerCase()) && (isAdmin || p.active !== false))
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
   const pageItems = filtered.slice((page-1)*PAGE_SIZE, page*PAGE_SIZE)
 
