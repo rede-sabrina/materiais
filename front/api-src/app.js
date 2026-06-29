@@ -17,7 +17,7 @@ app.use(cors({
         if(!origin) return callback(null, true)
         if(allowAll) return callback(null, true)
         if(allowedOrigins.includes(origin)) return callback(null, true)
-        if(origin.endsWith('.vercel.app') && origin.includes('rede-sabrina-devolucao')) return callback(null, true)
+        if(origin.endsWith('.vercel.app')) return callback(null, true)
         return callback(new Error('CORS not allowed'))
     },
     credentials: true

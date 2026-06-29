@@ -195,7 +195,7 @@ export default function NewReturn(){
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-semibold">Nova Devolução</h2>
+      <h2 className="text-xl font-semibold">Nova Pedido</h2>
       <div className="card">
         <div className="mb-4">
           

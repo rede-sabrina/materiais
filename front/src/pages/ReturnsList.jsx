@@ -114,7 +114,7 @@ export default function ReturnsList(){
   return (
     <div>
       <div className="mb-4">
-        <h2 className="text-xl font-semibold">Devoluções</h2>
+        <h2 className="text-xl font-semibold">Registro Pedidos</h2>
 
         <div className="flex items-center justify-between mt-3 flex-wrap">
           <div className="flex gap-3 flex-wrap items-center">
@@ -140,7 +140,7 @@ export default function ReturnsList(){
           </div>
 
           <div className="w-full mt-2 flex justify-end">
-            <Link to="/devolucoes/novo" className="px-3 py-1 bg-primary text-white rounded text-sm h-8 inline-flex items-center transition-all duration-200 hover:brightness-95 hover:shadow-md hover:-translate-y-0.5">Nova devolução</Link>
+            <Link to="/pedidos/novo" className="px-3 py-1 bg-primary text-white rounded text-sm h-8 inline-flex items-center transition-all duration-200 hover:brightness-95 hover:shadow-md hover:-translate-y-0.5">Novo pedido</Link>
           </div>
         </div>
       </div>

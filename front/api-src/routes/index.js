@@ -6,12 +6,14 @@ import uploadsRoutes from "./uploads.routes.js";
 import usersRoutes from "./users.routes.js";
 import reportsRoutes from "./reports.routes.js";
 import jobsRoutes from "./jobs.routes.js";
+import ordersRoutes from "./orders.routes.js";
 import auditRoutes from "./audit.routes.js";
 
 const router = Router()
 
 router.use('/auth', authRoutes)
 router.use('/returns', returnsRoutes)
+router.use('/orders', ordersRoutes)
 router.use('/products', productsRoutes)
 router.use('/uploads', uploadsRoutes)
 router.use('/users', usersRoutes)

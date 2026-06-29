@@ -29,4 +29,32 @@ export async function getProductByEan(ean){
   return products.find(p => p.ean === ean)
 }
 
-export default { getAllProducts, getProductByEan }
+export async function createNewProduct({ codigo, ean, nome, quantidade }){
+  try{
+    if(ProductModel && ProductModel.create){
+      const doc = await ProductModel.create({ codigo, ean, nome, quantidade })
+      return doc.toObject()
+    }
+  }catch(e){}
+  const item = { codigo, ean, nome, quantidade }
+  // add to in‑memory list (fallback)
+  products.unshift(item)
+  return item
+}
+
+export async function setProductActive(codigo, active){
+  try{
+    if(ProductModel && ProductModel.findOneAndUpdate){
+      const doc = await ProductModel.findOneAndUpdate({ codigo }, { active }, { new:true }).lean()
+      return doc
+    }
+  }catch(e){}
+  const idx = products.findIndex(p=>p.codigo===codigo)
+  if(idx!==-1){
+    products[idx].active = active
+    return products[idx]
+  }
+  return null
+}
+
+export default { getAllProducts, getProductByEan, createNewProduct, setProductActive }

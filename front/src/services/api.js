@@ -90,10 +90,38 @@ export async function fetchReportSummary(params){
 }
 
 export async function fetchAuditEvents(params){
-	const qs = params ? Object.keys(params).filter(k=> params[k] !== undefined && params[k] !== '').map(k=> encodeURIComponent(k) + '=' + encodeURIComponent(params[k])).join('&') : ''
-	const path = '/api/audit' + (qs ? ('?' + qs) : '')
-	const r = await maybeFetch(path)
-	return r ?? wait([])
+  const qs = params ? Object.keys(params).filter(k=> params[k] !== undefined && params[k] !== '').map(k=> encodeURIComponent(k) + '=' + encodeURIComponent(params[k])).join('&') : ''
+  const path = '/api/audit' + (qs ? ('?' + qs) : '')
+  const r = await maybeFetch(path)
+  return r ?? wait([])
+}
+
+// ---------- Orders API ----------
+export async function fetchOrders(params){
+  if(!params) params = {}
+  const qs = Object.keys(params).filter(k=> params[k] !== undefined && params[k] !== '').map(k=> encodeURIComponent(k)+'='+encodeURIComponent(params[k])).join('&')
+  const path = '/api/orders' + (qs ? ('?'+qs) : '')
+  const r = await maybeFetch(path)
+  return r ?? []
+}
+
+export async function fetchOrderById(id){
+  const r = await maybeFetch(`/api/orders/${id}`)
+  return r ?? null
+}
+
+export async function createOrder(data){
+  if(!API_BASE){
+    const item = { ...data, id: Date.now(), createdAt: new Date().toISOString(), status: data.status || 'Pendente' }
+    return wait(item)
+  }
+  const token = getToken()
+  const headers = {'Content-Type':'application/json', ...(token ? {'Authorization':`Bearer ${token}`} : {}) }
+  const res = await fetch(`${API_BASE}/api/orders`, { method:'POST', headers, body: JSON.stringify(data) })
+  if(!res.ok) throw new Error('create order failed')
+  const txt = await res.text()
+  if(!txt) return {}
+  try{ return JSON.parse(txt) } catch(e){ return {} }
 }
 
 export async function deleteAuditEvents(params){

@@ -57,27 +57,23 @@ export default function Sidebar(){
     <aside className="w-64 bg-white border-r p-6 flex flex-col justify-between">
       <div>
         <div className="mb-8">
-          <div className="text-2xl font-bold text-primary">Devoluções</div>
+          <div className="text-2xl font-bold text-primary">Materiais</div>
           <div className="text-sm text-slate-500">Rede Sabrina</div>
         </div>
 
         <nav>
           <Item to="/">Dashboard</Item>
           <Item to="/lembretes" badge={remindersCount > 0 ? remindersCount : null}>Lembretes</Item>
-          <Item to="/devolucoes">Devoluções</Item>
-          <Item to="/devolucoes/novo">Nova Devolução</Item>
-          {isAdmin && <Item to="/admin/users">Gerenciar Usuários</Item>}
-          {isAdmin && <Item to="/auditoria">Auditoria</Item>}
+          <Item to="/devolucoes">Registro Pedidos</Item>
+          <Item to="/pedidos/novo">Novo Pedido</Item>
+          {isAdmin && (
+            <>
+              <Item to="/admin/users">Gerenciar Usuários</Item>
+              <Item to="/admin/produtos">Estoque</Item>
+            </>
+          )}
           {isAdmin && <Item to="/reports">Relatórios</Item>}
         </nav>
-      </div>
-
-      <div className="text-xs text-slate-500 mt-6">
-        <div className="border-t pt-3">
-          <div className="font-semibold mb-1">Prazos para solicitação</div>
-          <div>Santa Cruz e Profarma: <span className="font-medium">5 dias</span> após emissão da nota.</div>
-          <div>Demais distribuidoras: <span className="font-medium">3 dias</span> após emissão da nota.</div>
-        </div>
       </div>
     </aside>
   )
