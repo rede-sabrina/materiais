@@ -137,6 +137,211 @@ export default function Reports(){
     setLoading(false)
   }
 
+  function handlePrint(){
+    if(!report) return
+    
+    const html = `
+      <html>
+        <head>
+          <title>Relatório de Pedidos - ${startDate} até ${endDate}</title>
+          <style>
+            @page { 
+              size: A4 landscape; 
+              margin: 1.5cm; 
+              @page:first { margin-top: 2cm; }
+            }
+            @media print {
+              body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            }
+            body { 
+              font-family: Arial, Helvetica, sans-serif; 
+              padding: 0; 
+              margin: 0; 
+              background: #fff;
+              color: #333;
+            }
+            .header {
+              text-align: center;
+              margin-bottom: 30px;
+              padding-bottom: 20px;
+              border-bottom: 3px solid #667eea;
+            }
+            .header h1 {
+              color: #667eea;
+              font-size: 24px;
+              margin: 0 0 10px 0;
+              font-weight: bold;
+            }
+            .period {
+              color: #666;
+              font-size: 14px;
+              margin: 0;
+            }
+            .section {
+              margin-bottom: 40px;
+              page-break-inside: avoid;
+            }
+            .section-title {
+              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+              color: #fff;
+              padding: 12px 20px;
+              font-size: 16px;
+              font-weight: bold;
+              border-radius: 6px;
+              margin-bottom: 15px;
+              box-shadow: 0 2px 8px rgba(102,126,234,0.3);
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              font-size: 11px;
+              margin-bottom: 15px;
+            }
+            th {
+              background: #f3f4f6;
+              color: #374151;
+              font-weight: bold;
+              padding: 10px 8px;
+              text-align: left;
+              border-bottom: 2px solid #9ca3af;
+              white-space: nowrap;
+            }
+            td {
+              padding: 8px;
+              border-bottom: 1px solid #e5e7eb;
+              color: #1f2937;
+            }
+            tr:nth-child(even) {
+              background: #f9fafb;
+            }
+            tr:hover {
+              background: #f0f4ff;
+            }
+            .text-right {
+              text-align: right;
+            }
+            .font-bold {
+              font-weight: bold;
+            }
+            .text-blue {
+              color: #4f46e5;
+            }
+            .summary-box {
+              display: inline-block;
+              background: #f3f4f6;
+              padding: 15px 25px;
+              border-radius: 8px;
+              margin: 10px;
+              text-align: center;
+              min-width: 150px;
+            }
+            .summary-label {
+              font-size: 11px;
+              color: #666;
+              margin-bottom: 5px;
+            }
+            .summary-value {
+              font-size: 24px;
+              font-weight: bold;
+              color: #667eea;
+            }
+            .summary-container {
+              text-align: center;
+              margin: 20px 0;
+            }
+            .no-data {
+              text-align: center;
+              color: #999;
+              font-style: italic;
+              padding: 30px;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <h1>📊 Relatório de Pedidos</h1>
+            <p class="period">Período: <strong>${new Date(startDate+'T00:00:00').toLocaleDateString('pt-BR')}</strong> até <strong>${new Date(endDate+'T23:59:59').toLocaleDateString('pt-BR')}</strong></p>
+          </div>
+
+          <div class="section">
+            <div class="section-title">📦 Resumo do Período</div>
+            <div class="summary-container">
+              <div class="summary-box">
+                <div class="summary-label">Total de Pedidos</div>
+                <div class="summary-value">${report.totalOrders}</div>
+              </div>
+              <div class="summary-box">
+                <div class="summary-label">Materiais Diferentes</div>
+                <div class="summary-value">${report.distinctMaterials}</div>
+              </div>
+              <div class="summary-box">
+                <div class="summary-label">Itens Solicitados</div>
+                <div class="summary-value">${report.totalItens}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-title">📋 Total Geral de Materiais</div>
+            ${report.materialTotals.length > 0 ? `
+            <table>
+              <thead>
+                <tr>
+                  <th style="width: 70%;">Material</th>
+                  <th class="text-right" style="width: 30%;">Quantidade Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${report.materialTotals.map(r => `
+                  <tr>
+                    <td>${r.nome}</td>
+                    <td class="text-right font-bold text-blue">${r.total}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+            ` : '<div class="no-data">Nenhum material no período selecionado</div>'}
+          </div>
+
+          <div class="section">
+            <div class="section-title">🏪 Distribuição por Loja</div>
+            ${report.materialTotals.length > 0 ? `
+            <table style="font-size: 10px;">
+              <thead>
+                <tr>
+                  <th style="width: 25%; min-width: 150px;">Material</th>
+                  ${stores.map(s => `<th class="text-right" style="min-width: 80px;">${s.length > 20 ? s.substring(0,20)+'...' : s}</th>`).join('')}
+                </tr>
+              </thead>
+              <tbody>
+                ${report.materialTotals.map(m => `
+                  <tr>
+                    <td style="font-weight: bold;">${m.nome}</td>
+                    ${stores.map(s => {
+                      const loja = report.storeTotals.find(st=>st.loja===s)
+                      const qty = loja?.materiais.find(mat=>mat.material===m.nome)?.quantidade||0
+                      return `<td class="text-right ${qty > 0 ? 'font-bold text-blue' : ''}" style="color: ${qty > 0 ? '#4f46e5' : '#999'}">${qty}</td>`
+                    }).join('')}
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+            ` : '<div class="no-data">Nenhum dado para exibir</div>'}
+          </div>
+
+          <div style="margin-top: 40px; padding-top: 20px; border-top: 2px solid #e5e7eb; text-align: center; color: #999; font-size: 10px;">
+            Relatório gerado em ${new Date().toLocaleString('pt-BR')}
+          </div>
+        </body>
+      </html>
+    `
+
+    const w = window.open('', '_blank')
+    w.document.write(html)
+    w.document.close()
+    setTimeout(()=>{ w.print() }, 250)
+  }
+
   if(loading) return <div>Carregando...</div>
   if(accessDenied) return <div>Acesso restrito: somente administradores</div>
 
@@ -174,7 +379,7 @@ export default function Reports(){
         </div>
         <div className="flex gap-2">
           <button onClick={handleGenerate} className="px-3 py-1 bg-primary text-white rounded">Gerar Relatório</button>
-          <button onClick={()=>window.print()} className="px-3 py-1 bg-slate-700 text-white rounded">Imprimir PDF</button>
+          <button onClick={handlePrint} className="px-3 py-1 bg-slate-700 text-white rounded">Imprimir Relatório</button>
         </div>
       </div>
 
@@ -188,15 +393,15 @@ export default function Reports(){
               <table className="w-full text-sm">
                 <thead className="bg-primary text-white sticky top-0">
                   <tr>
-                    <th className="p-3 text-left font-semibold">Material</th>
-                    <th className="p-3 text-right font-semibold">Quantidade Total</th>
+                    <th className="px-4 py-3 text-left font-semibold">Material</th>
+                    <th className="px-4 py-3 text-right font-semibold w-32">Qtd. Total</th>
                   </tr>
                 </thead>
                 <tbody>
                   {report.materialTotals.map((r, idx)=> (
                     <tr key={r.nome} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                      <td className="p-3 font-medium text-gray-800">{r.nome}</td>
-                      <td className="p-3 text-right font-bold text-blue-700 text-base">{r.total}</td>
+                      <td className="px-4 py-3 font-medium text-gray-800">{r.nome}</td>
+                      <td className="px-4 py-3 text-right font-bold text-blue-700 text-base">{r.total}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -213,21 +418,21 @@ export default function Reports(){
               <table className="w-full text-sm">
                 <thead className="bg-primary text-white sticky top-0">
                   <tr>
-                    <th className="p-3 text-left font-semibold">Material</th>
+                    <th className="px-4 py-3 text-left font-semibold">Material</th>
                     {stores.map(s=> (
-                      <th key={s} className="p-3 text-right font-semibold min-w-[100px]">{s}</th>
+                      <th key={s} className="px-4 py-3 text-right font-semibold w-28 whitespace-nowrap">{s.length > 15 ? s.substring(0,15)+'...' : s}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
                   {report.materialTotals.map((m, idx)=> (
                     <tr key={m.nome} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                      <td className="p-3 font-medium text-gray-800">{m.nome}</td>
+                      <td className="px-4 py-3 font-medium text-gray-800">{m.nome}</td>
                       {stores.map(s=>{
                         const loja = report.storeTotals.find(st=>st.loja===s)
                         const qty = loja?.materiais.find(mat=>mat.material===m.nome)?.quantidade||0
                         return (
-                          <td key={s} className={`p-3 text-right ${qty > 0 ? 'font-semibold text-blue-700' : 'text-gray-400'}`}>
+                          <td key={s} className={`px-4 py-3 text-right ${qty > 0 ? 'font-semibold text-blue-700' : 'text-gray-400'}`}>
                             {qty}
                           </td>
                         )

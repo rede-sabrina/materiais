@@ -13,7 +13,6 @@ import DashboardLayout from './layouts/DashboardLayout'
 import SecretRegister from './pages/SecretRegister'
 import AdminUsers from './pages/AdminUsers'
 import AdminProducts from './pages/AdminProducts'
-import Reminders from './pages/Reminders'
 
 
 export default function App(){
