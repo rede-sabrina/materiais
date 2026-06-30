@@ -202,7 +202,7 @@ export default function OrdersList(){
         <table class="matrix-table">
           <thead>
             <tr>
-              <th class="product-col">Produto</th>
+              <th class="product-col">Materiais Escritório</th>
               ${allStores.map(s=>`<th>${s.length > 15 ? s.substring(0,15)+'...' : s}</th>`).join('')}
             </tr>
           </thead>
