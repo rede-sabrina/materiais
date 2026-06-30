@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { NavLink } from 'react-router-dom'
 
 function Item({to, children, badge}){
@@ -22,7 +22,6 @@ export default function Sidebar(){
       const parts = token.split('.')
       if(parts.length<2) return null
       const payload = parts[1]
-      // base64url -> base64
       const b = payload.replace(/-/g, '+').replace(/_/g, '/')
       const json = decodeURIComponent(atob(b).split('').map(c=> '%'+('00'+c.charCodeAt(0).toString(16)).slice(-2)).join(''))
       return JSON.parse(json)
@@ -32,26 +31,6 @@ export default function Sidebar(){
   const token = typeof window !== 'undefined' ? sessionStorage.getItem('token') : null
   const user = parseJwt(token)
   const isAdmin = user && user.role === 'ADMIN'
-  const userKey = user && (user.username || user.id) ? String(user.username || user.id) : 'anon'
-  const countStorageKey = `reminders_count_${userKey}`
-  const [remindersCount, setRemindersCount] = useState(0)
-
-  useEffect(()=>{
-    function readCount(){
-      const raw = typeof window !== 'undefined' ? sessionStorage.getItem(countStorageKey) : null
-      const next = raw ? Number(raw) : 0
-      setRemindersCount(Number.isNaN(next) ? 0 : next)
-    }
-    function onCountEvent(e){
-      if(e?.detail?.key === countStorageKey){
-        const next = Number(e.detail.count)
-        setRemindersCount(Number.isNaN(next) ? 0 : next)
-      }
-    }
-    readCount()
-    window.addEventListener('reminders-count', onCountEvent)
-    return () => window.removeEventListener('reminders-count', onCountEvent)
-  }, [countStorageKey])
 
   return (
     <aside className="w-64 bg-white border-r p-6 flex flex-col justify-between">
@@ -63,7 +42,6 @@ export default function Sidebar(){
 
         <nav>
           <Item to="/">Dashboard</Item>
-          <Item to="/lembretes" badge={remindersCount > 0 ? remindersCount : null}>Lembretes</Item>
           <Item to="/pedidos">Registro Pedidos</Item>
           <Item to="/pedidos/novo">Novo Pedido</Item>
           {isAdmin && (

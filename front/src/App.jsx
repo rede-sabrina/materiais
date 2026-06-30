@@ -20,10 +20,9 @@ export default function App(){
     <Routes>
       <Route path="/login" element={<Login/>} />
       <Route path="/secret-register" element={<SecretRegister/>} />
-      <Route path="/" element={<DashboardLayout/>}>
-        <Route index element={<DashboardHome/>} />
-        <Route path="lembretes" element={<Reminders/>} />
-        <Route path="reports" element={<Reports/>} />
+<Route path="/" element={<DashboardLayout/>}>
+          <Route index element={<DashboardHome/>} />
+          <Route path="reports" element={<Reports/>} />
 
         <Route path="admin/users" element={<AdminUsers/>} />
           <Route path="admin/produtos" element={<AdminProducts/>} />
