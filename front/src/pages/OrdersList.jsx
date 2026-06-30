@@ -62,13 +62,16 @@ export default function OrdersList(){
 
     // Print grouped by store (admin only) with modern layout
     function printByStore(){
+      // Filtrar apenas pedidos pendentes
+      const pendingOrders = sorted.filter(o => o.status === 'Pendente');
+      
       const groups = {};
-      sorted.forEach(o=>{
+      pendingOrders.forEach(o=>{
         const store = resolveStore(o);
         if(!groups[store]) groups[store] = [];
         groups[store].push(o);
       });
-      let html = `<html><head><title>Pedidos por Loja</title><style>
+      let html = `<html><head><title>Pedidos Pendentes por Loja</title><style>
         @media print {
           @page { margin: 1.5cm; size: A4; }
           body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -78,7 +81,7 @@ export default function OrdersList(){
         .store-header{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;padding:16px 24px;border-radius:8px;font-size:1.5rem;font-weight:bold;margin-bottom:20px;box-shadow:0 2px 8px rgba(102,126,234,0.3);}
         .order-block{page-break-inside:avoid;margin-bottom:25px;background:#fff;border:1px solid #e5e7eb;border-radius:6px;padding:16px;}
         .order-table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid #d1d5db;border-radius:6px;overflow:hidden;margin-bottom:12px;}
-        .order-table th{background:#f3f4f6;padding:12px 16px;font-weight:700;text-align:left;color:#374151;font-size:0.95rem;border-bottom:2px solid #9ca3af;}
+        .order-table th{background:#f3f4f6;padding:12px 16px;font-weight:700;text-align:left;color:#374151;font-size:0.95rem;border-bottom:1px solid #9ca3af;}
         .order-table td{padding:12px 16px;border-bottom:1px solid #e5e7eb;vertical-align:middle;color:#1f2937;}
         .order-table tr:last-child td{border-bottom:none;}
         .order-table tr:nth-child(even){background:#f9fafb;}
@@ -86,12 +89,22 @@ export default function OrdersList(){
         .order-date{color:#6b7280;font-size:0.9rem;}
         .items-label{margin:12px 0 8px 0;font-size:1rem;font-weight:700;color:#374151;padding-left:4px;}
         .items-table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid #d1d5db;border-radius:6px;overflow:hidden;}
-        .items-table th{background:#e0e7ff;padding:10px 14px;font-weight:600;color:#4338ca;font-size:0.95rem;border-bottom:2px solid #a5b4fc;}
+        .items-table th{background:#e0e7ff;padding:10px 14px;font-weight:600;color:#4338ca;font-size:0.95rem;border-bottom:1px solid #a5b4fc;}
         .items-table td{padding:10px 14px;border-bottom:1px solid #e0e7ff;vertical-align:middle;color:#374151;}
         .items-table tr:last-child td{border-bottom:none;}
         .items-table tr:nth-child(even){background:#f0f4ff;}
         .no-orders{color:#9ca3af;font-style:italic;text-align:center;padding:20px;}
-      </style></head><body>`;
+        .pending-badge{display:inline-block;background:#fef3c7;color:#92400e;padding:4px 12px;border-radius:4px;font-size:12px;font-weight:bold;margin-bottom:15px;}
+      </style></head><body>
+        <div style="text-align:center;margin-bottom:20px;">
+          <h1 style="color:#667eea;font-size:24px;margin:0 0 10px 0;">📦 Pedidos Pendentes por Loja</h1>
+          <p style="color:#666;font-size:14px;">Período: <strong>${new Date(startDate+'T00:00:00').toLocaleDateString('pt-BR')}</strong> até <strong>${new Date(endDate+'T23:59:59').toLocaleDateString('pt-BR')}</strong></p>
+          <span class="pending-badge">⏳ Apenas pedidos PENDENTES</span>
+        </div>`;
+      
+      if(Object.keys(groups).length === 0){
+        html += `<div class="no-orders">Nenhum pedido pendente no período selecionado</div>`;
+      } else {
       Object.entries(groups).forEach(([store, list])=>{
         html += `<div class="store-section"><div class="store-header">📦 ${store}</div>`;
         if(list.length === 0){
@@ -125,11 +138,14 @@ export default function OrdersList(){
       setTimeout(()=>{ w.print(); }, 250);
     }
 
-    // Nova função: Imprimir Matriz Geral (todas as lojas em uma única folha)
+    // Nova função: Imprimir Matriz Geral (todas as lojas em uma única folha) - Apenas Pendentes
     function printMatrix(){
+      // Filtrar apenas pedidos pendentes
+      const pendingOrders = sorted.filter(o => o.status === 'Pendente');
+      
       // Coletar todos os produtos únicos
       const allProducts = new Map();
-      sorted.forEach(o=>{
+      pendingOrders.forEach(o=>{
         (o.itens||[]).forEach(it=>{
           const key = it.nome || it.codigo || 'Desconhecido';
           if(!allProducts.has(key)){
@@ -142,7 +158,7 @@ export default function OrdersList(){
       const products = Array.from(allProducts.values()).sort((a,b)=> a.nome.localeCompare(b.nome));
 
       // Coletar todas as lojas
-      const allStores = Array.from(new Set(sorted.map(o=> resolveStore(o)))).sort();
+      const allStores = Array.from(new Set(pendingOrders.map(o=> resolveStore(o)))).sort();
 
       // Construir matriz: produto × loja → quantidade
       const matrix = {};
@@ -152,7 +168,7 @@ export default function OrdersList(){
       });
 
       // Preencher matriz com quantidades
-      sorted.forEach(o=>{
+      pendingOrders.forEach(o=>{
         const store = resolveStore(o);
         (o.itens||[]).forEach(it=>{
           const nome = it.nome || it.codigo || 'Desconhecido';
@@ -163,32 +179,26 @@ export default function OrdersList(){
       });
 
       // Gerar HTML
-      let html = `<html><head><title>Matriz de Separação de Materiais</title><style>
+      let html = `<html><head><title>Matriz de Separação - Pedidos Pendentes</title><style>
         @media print {
-          @page { margin: 1cm; size: A4 landscape; }
+          @page { margin: 0.8cm; size: A4 landscape; }
           body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
-        body{font-family:Arial,Helvetica,sans-serif;padding:15px;margin:0;background:#fff;}
-        .header{text-align:center;margin-bottom:20px;padding-bottom:15px;border-bottom:3px solid #667eea;}
-        .header h1{color:#667eea;font-size:20px;margin:0 0 8px 0;font-weight:bold;}
-        .period{color:#666;font-size:12px;margin:0;}
-        .matrix-table{width:100%;border-collapse:collapse;font-size:10px;}
-        .matrix-table th{background:#667eea;color:#fff;padding:8px 6px;font-weight:bold;border:2px solid #000;text-align:center;white-space:nowrap;}
-        .matrix-table td{padding:6px 4px;border:2px solid #000;text-align:center;vertical-align:middle;font-weight:600;background:#fff;}
-        .matrix-table .product-col{text-align:left;font-weight:bold;background:#f9fafb;color:#1f2937;min-width:150px;border:2px solid #000;}
+        body{font-family:Arial,Helvetica,sans-serif;padding:10px;margin:0;background:#fff;}
+        .period{text-align:center;color:#666;font-size:11px;margin:0 0 10px 0;}
+        .pending-badge{display:inline-block;background:#fef3c7;color:#92400e;padding:4px 12px;border-radius:4px;font-size:11px;font-weight:bold;margin:8px 0;}
+        .matrix-table{width:100%;border-collapse:collapse;font-size:9px;}
+        .matrix-table th{background:#667eea;color:#fff;padding:6px 4px;font-weight:bold;border:2px solid #000;text-align:center;white-space:nowrap;}
+        .matrix-table td{padding:5px 4px;border:2px solid #000;text-align:center;vertical-align:middle;font-weight:600;background:#fff;}
+        .matrix-table .product-col{text-align:left;font-weight:bold;background:#f9fafb;color:#1f2937;min-width:120px;border:2px solid #000;}
         .matrix-table .qty-cell{background:#fef3c7;color:#92400e;}
         .matrix-table .qty-high{background:#fbbf24;color:#92400e;font-weight:800;}
         .matrix-table .qty-very-high{background:#f59e0b;color:#fff;font-weight:900;}
         .matrix-table tr:nth-child(even) .product-col{background:#f3f4f6;}
-        .legend{margin-top:15px;padding:10px;background:#f9fafb;border-radius:6px;font-size:10px;}
-        .legend-item{display:inline-block;margin-right:15px;}
-        .legend-color{display:inline-block;width:16px;height:16px;margin-right:4px;border:1px solid #999;vertical-align:middle;}
-        .footer{margin-top:15px;text-align:center;color:#999;font-size:9px;border-top:1px solid #e5e7eb;padding-top:10px;}
+        .footer{margin-top:8px;text-align:center;color:#999;font-size:8px;border-top:1px solid #e5e7eb;padding-top:6px;}
       </style></head><body>
-        <div class="header">
-          <h1>📦 Matriz de Separação de Materiais</h1>
-          <p class="period">Período: <strong>${new Date(startDate+'T00:00:00').toLocaleDateString('pt-BR')}</strong> até <strong>${new Date(endDate+'T23:59:59').toLocaleDateString('pt-BR')}</strong></p>
-        </div>
+        <p class="period"><strong>Pedidos Pendentes</strong> • Período: ${new Date(startDate+'T00:00:00').toLocaleDateString('pt-BR')} até ${new Date(endDate+'T23:59:59').toLocaleDateString('pt-BR')}</p>
+        <div style="text-align:center;"><span class="pending-badge">⏳ Apenas PENDENTES</span></div>
         <table class="matrix-table">
           <thead>
             <tr>
@@ -213,15 +223,8 @@ export default function OrdersList(){
             `).join('')}
           </tbody>
         </table>
-        <div class="legend">
-          <strong>Legenda:</strong>
-          <span class="legend-item"><span class="legend-color" style="background:#fff;border:1px solid #d1d5db"></span>Sem pedido</span>
-          <span class="legend-item"><span class="legend-color" style="background:#fef3c7"></span>1-4 un.</span>
-          <span class="legend-item"><span class="legend-color" style="background:#fbbf24"></span>5-9 un.</span>
-          <span class="legend-item"><span class="legend-color" style="background:#f59e0b"></span>10+ un.</span>
-        </div>
         <div class="footer">
-          Matriz gerada em ${new Date().toLocaleString('pt-BR')} • Total de produtos: ${products.length} • Total de lojas: ${allStores.length}
+          Gerado em ${new Date().toLocaleString('pt-BR')} • ${products.length} produtos • ${allStores.length} lojas
         </div>
       </body></html>`;
 

@@ -308,18 +308,18 @@ export default function Reports(){
           <div class="section">
             <div class="section-title">📋 Total Geral de Materiais</div>
             ${report.materialTotals.length > 0 ? `
-            <table style="table-layout:fixed;">
+            <table style="width: auto; margin: 0 auto;">
               <thead>
                 <tr>
-                  <th style="width:70%;padding:6px 8px;">Material</th>
-                  <th class="text-right" style="width:30%;padding:6px 8px;">Qtd. Total</th>
+                  <th style="padding:6px 12px;white-space:nowrap;">Material</th>
+                  <th class="text-right" style="padding:6px 12px;white-space:nowrap;min-width:80px;">Qtd. Total</th>
                 </tr>
               </thead>
               <tbody>
                 ${report.materialTotals.map(r => `
                   <tr>
-                    <td style="padding:5px 8px;overflow:hidden;text-overflow:ellipsis;">${r.nome}</td>
-                    <td class="text-right font-bold text-blue" style="padding:5px 8px;">${r.total}</td>
+                    <td style="padding:5px 12px;font-weight:500;">${r.nome}</td>
+                    <td class="text-right font-bold text-blue" style="padding:5px 12px;">${r.total}</td>
                   </tr>
                 `).join('')}
               </tbody>
