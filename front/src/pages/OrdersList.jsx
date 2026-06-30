@@ -137,6 +137,7 @@ export default function OrdersList(){
       w.document.close();
       setTimeout(()=>{ w.print(); }, 250);
     }
+  }
 
     // Nova função: Imprimir Matriz Geral (todas as lojas em uma única folha) - Apenas Pendentes
     function printMatrix(){
