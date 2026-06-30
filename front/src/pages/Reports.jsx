@@ -213,6 +213,25 @@ export default function Reports(){
               margin-bottom: 12px;
               box-shadow: 0 2px 8px rgba(102,126,234,0.3);
             }
+            /* Tabela Total Geral de Materiais - Compacta */
+            .section:nth-of-type(2) table {
+              table-layout: fixed;
+              width: 85%;
+              margin: 0 auto;
+            }
+            .section:nth-of-type(2) th {
+              padding: 6px 8px;
+              font-size: 11px;
+            }
+            .section:nth-of-type(2) td {
+              padding: 5px 8px;
+              font-size: 11px;
+            }
+            .section:nth-of-type(2) td:first-child {
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+            }
             table {
               width: 100%;
               border-collapse: collapse;
@@ -308,18 +327,18 @@ export default function Reports(){
           <div class="section">
             <div class="section-title">📋 Total Geral de Materiais</div>
             ${report.materialTotals.length > 0 ? `
-            <table>
+            <table style="table-layout:fixed;">
               <thead>
                 <tr>
-                  <th style="width: 65%;">Material</th>
-                  <th class="text-right" style="width: 35%;">Qtd. Total</th>
+                  <th style="width:70%;padding:6px 8px;">Material</th>
+                  <th class="text-right" style="width:30%;padding:6px 8px;">Qtd. Total</th>
                 </tr>
               </thead>
               <tbody>
                 ${report.materialTotals.map(r => `
                   <tr>
-                    <td>${r.nome}</td>
-                    <td class="text-right font-bold text-blue">${r.total}</td>
+                    <td style="padding:5px 8px;overflow:hidden;text-overflow:ellipsis;">${r.nome}</td>
+                    <td class="text-right font-bold text-blue" style="padding:5px 8px;">${r.total}</td>
                   </tr>
                 `).join('')}
               </tbody>

@@ -173,9 +173,9 @@ export default function OrdersList(){
         .header h1{color:#667eea;font-size:20px;margin:0 0 8px 0;font-weight:bold;}
         .period{color:#666;font-size:12px;margin:0;}
         .matrix-table{width:100%;border-collapse:collapse;font-size:10px;}
-        .matrix-table th{background:#667eea;color:#fff;padding:8px 6px;font-weight:bold;border:1px solid #5568d3;text-align:center;white-space:nowrap;}
-        .matrix-table td{padding:6px 4px;border:1px solid #d1d5db;text-align:center;vertical-align:middle;font-weight:600;}
-        .matrix-table .product-col{text-align:left;font-weight:bold;background:#f9fafb;color:#1f2937;min-width:150px;}
+        .matrix-table th{background:#667eea;color:#fff;padding:8px 6px;font-weight:bold;border:2px solid #000;text-align:center;white-space:nowrap;}
+        .matrix-table td{padding:6px 4px;border:2px solid #000;text-align:center;vertical-align:middle;font-weight:600;background:#fff;}
+        .matrix-table .product-col{text-align:left;font-weight:bold;background:#f9fafb;color:#1f2937;min-width:150px;border:2px solid #000;}
         .matrix-table .qty-cell{background:#fef3c7;color:#92400e;}
         .matrix-table .qty-high{background:#fbbf24;color:#92400e;font-weight:800;}
         .matrix-table .qty-very-high{background:#f59e0b;color:#fff;font-weight:900;}
@@ -202,10 +202,12 @@ export default function OrdersList(){
                 <td class="product-col">${p.nome}</td>
                 ${allStores.map(s=>{
                   const qty = matrix[p.nome][s] || 0;
-                  let cellClass = 'qty-cell';
-                  if(qty >= 10) cellClass = 'qty-very-high';
-                  else if(qty >= 5) cellClass = 'qty-high';
-                  return `<td class="${cellClass}">${qty > 0 ? qty : ''}</td>`;
+                  let cellClass = qty > 0 ? 'qty-cell' : '';
+                  let cellContent = qty > 0 ? String(qty) : '';
+                  if(qty >= 10){ cellClass = 'qty-very-high'; }
+                  else if(qty >= 5){ cellClass = 'qty-high'; }
+                  else if(qty === 0){ cellClass = ''; cellContent = ''; }
+                  return `<td class="${cellClass}">${cellContent}</td>`;
                 }).join('')}
               </tr>
             `).join('')}
@@ -213,6 +215,7 @@ export default function OrdersList(){
         </table>
         <div class="legend">
           <strong>Legenda:</strong>
+          <span class="legend-item"><span class="legend-color" style="background:#fff;border:1px solid #d1d5db"></span>Sem pedido</span>
           <span class="legend-item"><span class="legend-color" style="background:#fef3c7"></span>1-4 un.</span>
           <span class="legend-item"><span class="legend-color" style="background:#fbbf24"></span>5-9 un.</span>
           <span class="legend-item"><span class="legend-color" style="background:#f59e0b"></span>10+ un.</span>
@@ -237,8 +240,7 @@ export default function OrdersList(){
           <input type="date" value={startDate} onChange={e=>setStartDate(e.target.value)} className="border px-2 py-1 rounded" />
           <label className="text-sm">Até:</label>
           <input type="date" value={endDate} onChange={e=>setEndDate(e.target.value)} className="border px-2 py-1 rounded" />
-          <button onClick={printMatrix} className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700">📊 Imprimir Matriz de Separação</button>
-          <button onClick={printByStore} className="px-3 py-1 bg-primary text-white rounded">📦 Imprimir por Loja</button>
+          <button onClick={printMatrix} className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700">🖨️ Imprimir Pedidos</button>
         </div>
       )}
       <div className="bg-white rounded-md shadow p-4">
