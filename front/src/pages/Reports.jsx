@@ -279,6 +279,51 @@ export default function Reports(){
               font-style: italic;
               padding: 25px;
             }
+              .total-table {
+    width: 60%;
+    min-width: 560px;
+    max-width: 760px;
+    margin: 0 auto;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    overflow: hidden;
+    border-collapse: collapse;
+}
+
+.total-table th {
+    background: #f3f4f6;
+    color: #374151;
+    padding: 8px 18px;
+    font-size: 12px;
+    font-weight: bold;
+    border-bottom: 2px solid #9ca3af;
+}
+
+.total-table td {
+    padding: 7px 18px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.total-table th:first-child,
+.total-table td:first-child {
+    width: 78%;
+    text-align: left;
+}
+
+.total-table th:last-child,
+.total-table td:last-child {
+    width: 120px;
+    text-align: right;
+    font-weight: bold;
+}
+
+.total-table tbody tr:nth-child(even) {
+    background: #f9fafb;
+}
+
+.total-table tbody tr:hover {
+    background: #eef2ff;
+}
           </style>
         </head>
         <body>
@@ -286,45 +331,39 @@ export default function Reports(){
             <h1>📊 Relatório de Pedidos</h1>
             <p class="period">Período: <strong>${new Date(startDate+'T00:00:00').toLocaleDateString('pt-BR')}</strong> até <strong>${new Date(endDate+'T23:59:59').toLocaleDateString('pt-BR')}</strong></p>
           </div>
-
-          <div class="section">
-            <div class="section-title">📦 Resumo do Período</div>
-            <div class="summary-container">
-              <div class="summary-box">
-                <div class="summary-label">Total de Pedidos</div>
-                <div class="summary-value">${report.totalOrders}</div>
-              </div>
-              <div class="summary-box">
-                <div class="summary-label">Materiais Diferentes</div>
-                <div class="summary-value">${report.distinctMaterials}</div>
-              </div>
-              <div class="summary-box">
-                <div class="summary-label">Itens Solicitados</div>
-                <div class="summary-value">${report.totalItens}</div>
-              </div>
-            </div>
-          </div>
-
           <div class="section">
             <div class="section-title">📋 Total Geral de Materiais</div>
-            ${report.materialTotals.length > 0 ? `
-            <table style="width: auto; margin: 0 auto;">
-              <thead>
-                <tr>
-                  <th style="padding:6px 12px;white-space:nowrap;">Material</th>
-                  <th class="text-right" style="padding:6px 12px;white-space:nowrap;min-width:80px;">Qtd. Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${report.materialTotals.map(r => `
-                  <tr>
-                    <td style="padding:5px 12px;font-weight:500;">${r.nome}</td>
-                    <td class="text-right font-bold text-blue" style="padding:5px 12px;">${r.total}</td>
-                  </tr>
-                `).join('')}
-              </tbody>
-            </table>
-            ` : '<div class="no-data">Nenhum material no período selecionado</div>'}
+            ${
+  report.materialTotals.length > 0
+    ? `
+      <table class="total-table">
+        <thead>
+          <tr>
+            <th>Material</th>
+            <th class="text-right">Qtd. Total</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          ${report.materialTotals
+            .map(
+              (r) => `
+            <tr>
+              <td>${r.nome}</td>
+              <td class="text-right font-bold text-blue">
+                ${r.total}
+              </td>
+            </tr>
+          `
+            )
+            .join("")}
+        </tbody>
+      </table>
+    `
+    : `<div class="no-data">
+         Nenhum material no período selecionado
+       </div>`
+}
           </div>
 
           <div class="section">
