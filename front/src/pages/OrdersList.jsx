@@ -69,42 +69,60 @@ export default function OrdersList(){
         groups[store].push(o);
       });
       let html = `<html><head><title>Pedidos por Loja</title><style>
-        body{font-family:Arial,Helvetica,Inter,sans-serif;padding:20px;margin:0;}
-        .store-section{margin-bottom:30px;}
-        .store-header{background:#2c3e50;color:#fff;padding:12px 20px;border-radius:8px;font-size:1.3rem;}
-        .order-block{page-break-inside:avoid;margin-bottom:20px;}
-        .order-table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid #ccc;border-radius:6px;overflow:hidden;}
-        .order-table th{background:#ecf0f1;padding:10px 12px;font-weight:600;text-align:left;}
-        .order-table td{padding:10px 12px;border-bottom:1px solid #ccc;vertical-align:middle;}
-        .order-table tr:nth-child(even){background:#fafafa;}
-        .order-number{font-weight:bold;color:#2980b9;}
-        .order-date{color:#7f8c8d;font-size:0.9rem;}
-        .items-label{margin-top:6px;margin-bottom:4px;font-size:0.95rem;color:#2c3e50;}
-        .items-table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid #bbb;border-radius:4px;overflow:hidden;}
-        .items-table th{background:#d6eaf8;padding:8px;font-weight:500;color:#2c3e50;}
-        .items-table td{padding:8px;border-bottom:1px solid #ccc;vertical-align:middle;}
-        .items-table tr:nth-child(even){background:#f2f9fc;}
+        @media print {
+          @page { margin: 1.5cm; size: A4; }
+          body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        }
+        body{font-family:Arial,Helvetica,Inter,sans-serif;padding:20px;margin:0;background:#fff;}
+        .store-section{margin-bottom:40px;padding:20px;background:#f9fafb;border-radius:8px;}
+        .store-header{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;padding:16px 24px;border-radius:8px;font-size:1.5rem;font-weight:bold;margin-bottom:20px;box-shadow:0 2px 8px rgba(102,126,234,0.3);}
+        .order-block{page-break-inside:avoid;margin-bottom:25px;background:#fff;border:1px solid #e5e7eb;border-radius:6px;padding:16px;}
+        .order-table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid #d1d5db;border-radius:6px;overflow:hidden;margin-bottom:12px;}
+        .order-table th{background:#f3f4f6;padding:12px 16px;font-weight:700;text-align:left;color:#374151;font-size:0.95rem;border-bottom:2px solid #9ca3af;}
+        .order-table td{padding:12px 16px;border-bottom:1px solid #e5e7eb;vertical-align:middle;color:#1f2937;}
+        .order-table tr:last-child td{border-bottom:none;}
+        .order-table tr:nth-child(even){background:#f9fafb;}
+        .order-number{font-weight:800;color:#4f46e5;font-size:1.05rem;}
+        .order-date{color:#6b7280;font-size:0.9rem;}
+        .items-label{margin:12px 0 8px 0;font-size:1rem;font-weight:700;color:#374151;padding-left:4px;}
+        .items-table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid #d1d5db;border-radius:6px;overflow:hidden;}
+        .items-table th{background:#e0e7ff;padding:10px 14px;font-weight:600;color:#4338ca;font-size:0.95rem;border-bottom:2px solid #a5b4fc;}
+        .items-table td{padding:10px 14px;border-bottom:1px solid #e0e7ff;vertical-align:middle;color:#374151;}
+        .items-table tr:last-child td{border-bottom:none;}
+        .items-table tr:nth-child(even){background:#f0f4ff;}
+        .no-orders{color:#9ca3af;font-style:italic;text-align:center;padding:20px;}
       </style></head><body>`;
       Object.entries(groups).forEach(([store, list])=>{
-        html += `<div class="store-section"><div class="store-header">Loja: ${store}</div>`;
-        list.forEach(o=>{
-          html += `<div class="order-block"><table class="order-table"><thead><tr><th>Número do Pedido</th><th>Data</th></tr></thead><tbody><tr><td class="order-number">${o.numero}</td><td class="order-date">${formatDate(o.createdAt||o.data)}</td></tr></tbody></table>`;
-          if(Array.isArray(o.itens) && o.itens.length>0){
-            html += `<div class="items-label">Itens do pedido</div><table class="items-table"><thead><tr><th>Produto</th><th>Quantidade</th></tr></thead><tbody>`;
-            o.itens.forEach(item=>{
-              html += `<tr><td>${item.nome || ''}</td><td>${item.quantidade || ''}</td></tr>`;
-            });
-            html += `</tbody></table>`;
-          }
-          html += `</div>`; // close order-block
-        });
+        html += `<div class="store-section"><div class="store-header">📦 ${store}</div>`;
+        if(list.length === 0){
+          html += `<div class="no-orders">Nenhum pedido neste período</div>`;
+        } else {
+          list.forEach(o=>{
+            html += `<div class="order-block">
+              <table class="order-table">
+                <thead><tr><th>Número do Pedido</th><th>Data</th></tr></thead>
+                <tbody><tr><td class="order-number">${o.numero}</td><td class="order-date">${formatDate(o.createdAt||o.data)}</td></tr></tbody>
+              </table>`;
+            if(Array.isArray(o.itens) && o.itens.length>0){
+              html += `<div class="items-label">📋 Itens do pedido</div>
+                <table class="items-table">
+                  <thead><tr><th>Produto</th><th>Quantidade</th></tr></thead>
+                  <tbody>`;
+              o.itens.forEach(item=>{
+                html += `<tr><td>${item.nome || ''}</td><td><strong>${item.quantidade || ''}</strong></td></tr>`;
+              });
+              html += `</tbody></table>`;
+            }
+            html += `</div>`; // close order-block
+          });
+        }
         html += `</div>`; // close store-section
       });
       html += `</body></html>`;
       const w = window.open('', '_blank');
       w.document.write(html);
       w.document.close();
-      w.print();
+      setTimeout(()=>{ w.print(); }, 250);
     }
 
   return (
