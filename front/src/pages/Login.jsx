@@ -4,7 +4,6 @@ import Input from '../components/Input'
 import Button from '../components/Button'
 import { useModal } from '../components/Modal'
 import { fetchReturns } from '../services/api'
-import { buildNotifications, getReminderStorageKeys, loadReminderState, parseJwt, saveReminderCount } from '../utils/reminders'
 const API_BASE = import.meta.env.VITE_API_URL || ''
 
 export default function Login(){
@@ -32,15 +31,6 @@ export default function Login(){
       const data = await res.json()
       sessionStorage.setItem('token', data.token)
       sessionStorage.setItem('token_expires_at', String(Date.now() + 2 * 60 * 60 * 1000))
-      try{
-        const items = await fetchReturns()
-        const user = parseJwt(data.token)
-        const isAdmin = user && user.role === 'ADMIN'
-        const { stateKey, countKey } = getReminderStorageKeys(data.token)
-        const state = loadReminderState(stateKey)
-        const list = buildNotifications(items, isAdmin).filter(n => !state.dismissed.includes(n.id))
-        saveReminderCount(countKey, list, state)
-      } catch(e){}
       hideModal()
       nav('/')
     } catch(err){
