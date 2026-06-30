@@ -189,9 +189,9 @@ export default function OrdersList(){
         .period{text-align:center;color:#666;font-size:11px;margin:0 0 10px 0;}
         .pending-badge{display:inline-block;background:#fef3c7;color:#92400e;padding:4px 12px;border-radius:4px;font-size:11px;font-weight:bold;margin:8px 0;}
         .matrix-table{width:100%;border-collapse:collapse;font-size:9px;}
-        .matrix-table th{background:#667eea;color:#fff;padding:6px 4px;font-weight:bold;border:2px solid #000;text-align:center;white-space:nowrap;}
-        .matrix-table td{padding:5px 4px;border:2px solid #000;text-align:center;vertical-align:middle;font-weight:600;background:#fff;}
-        .matrix-table .product-col{text-align:left;font-weight:bold;background:#f9fafb;color:#1f2937;min-width:120px;border:2px solid #000;}
+        .matrix-table th{background:#667eea;color:#fff;padding:6px 4px;font-weight:bold;border:1px solid #000;text-align:center;white-space:nowrap;}
+        .matrix-table td{padding:5px 4px;border:1px solid #000;text-align:center;vertical-align:middle;font-weight:600;background:#fff;}
+        .matrix-table .product-col{text-align:left;font-weight:bold;background:#f9fafb;color:#1f2937;min-width:120px;border:1px solid #000;}
         .matrix-table .qty-cell{background:#fef3c7;color:#92400e;}
         .matrix-table .qty-high{background:#fbbf24;color:#92400e;font-weight:800;}
         .matrix-table .qty-very-high{background:#f59e0b;color:#fff;font-weight:900;}
@@ -199,7 +199,6 @@ export default function OrdersList(){
         .footer{margin-top:8px;text-align:center;color:#999;font-size:8px;border-top:1px solid #e5e7eb;padding-top:6px;}
       </style></head><body>
         <p class="period"><strong>Pedidos Pendentes</strong> • Período: ${new Date(startDate+'T00:00:00').toLocaleDateString('pt-BR')} até ${new Date(endDate+'T23:59:59').toLocaleDateString('pt-BR')}</p>
-        <div style="text-align:center;"><span class="pending-badge">⏳ Apenas PENDENTES</span></div>
         <table class="matrix-table">
           <thead>
             <tr>
