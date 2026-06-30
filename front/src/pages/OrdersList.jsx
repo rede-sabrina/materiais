@@ -44,19 +44,9 @@ export default function OrdersList(){
 
   // filter by date range (admin only UI, but apply for all)
     const filteredByDate = orders.filter(o=> {
-      const date = new Date(o.createdAt||o.data);
-      // start date inclusive (00:00:00)
-      if(startDate){
-        const start = new Date(startDate);
-        start.setHours(0,0,0,0);
-        if(date < start) return false;
-      }
-      // end date inclusive (23:59:59.999)
-      if(endDate){
-        const end = new Date(endDate);
-        end.setHours(23,59,59,999);
-        if(date > end) return false;
-      }
+      const orderDate = new Date(o.createdAt||o.data).toISOString().slice(0,10);
+      if(startDate && orderDate < startDate) return false;
+      if(endDate && orderDate > endDate) return false;
       return true;
     })
 
