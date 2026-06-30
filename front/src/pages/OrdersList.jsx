@@ -188,12 +188,12 @@ export default function OrdersList(){
         body{font-family:Arial,Helvetica,sans-serif;padding:10px;margin:0;background:#fff;}
         .period{text-align:center;color:#666;font-size:11px;margin:0 0 10px 0;}
         .pending-badge{display:inline-block;background:#fef3c7;color:#92400e;padding:4px 12px;border-radius:4px;font-size:11px;font-weight:bold;margin:8px 0;}
-        .matrix-table{width:100%;border-collapse:collapse;font-size:9px;}
-        .matrix-table th{background:#667eea;color:#fff;padding:6px 4px;font-weight:bold;border:1px solid #000;text-align:center;white-space:nowrap;}
-        .matrix-table td{padding:5px 4px;border:1px solid #000;text-align:center;vertical-align:middle;font-weight:600;background:#fff;}
-        .matrix-table .product-col{text-align:left;font-weight:bold;background:#f9fafb;color:#1f2937;min-width:120px;border:1px solid #000;}
-        .matrix-table .qty-cell{background:#fef3c7;color:#92400e;}
-        .matrix-table .qty-high{background:#fbbf24;color:#92400e;font-weight:800;}
+        .matrix-table{width:100%;border-collapse:collapse;}
+        .matrix-table th{background:#667eea;color:#fff;padding:8px 10px;font-weight:bold;border:2px solid #000;text-align:center;white-space:nowrap;font-size:10px;}
+        .matrix-table td{padding:8px 12px;border:2px solid #000;text-align:center;vertical-align:middle;font-weight:600;background:#fff;font-size:11px;}
+        .matrix-table .product-col{text-align:left;font-weight:bold;background:#f9fafb;color:#1f2937;min-width:90px;max-width:160px;padding:8px 10px;border:2px solid #000;font-size:11px;word-break:break-word;}
+        .matrix-table .qty-cell{background:#fef3c7;color:#92400e;font-weight:700;}
+        .matrix-table .qty-high{background:#fbbf24;color:#92400e;font-weight:900;}
         .matrix-table .qty-very-high{background:#f59e0b;color:#fff;font-weight:900;}
         .matrix-table tr:nth-child(even) .product-col{background:#f3f4f6;}
         .footer{margin-top:8px;text-align:center;color:#999;font-size:8px;border-top:1px solid #e5e7eb;padding-top:6px;}

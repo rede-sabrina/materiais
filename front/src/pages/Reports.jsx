@@ -168,8 +168,8 @@ export default function Reports(){
           <style>
             @page { 
               size: A4 landscape; 
-              margin: 1.2cm; 
-              @page:first { margin-top: 1.5cm; }
+              margin: 1cm; 
+              @page:first { margin-top: 1cm; }
             }
             @media print {
               body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -180,44 +180,44 @@ export default function Reports(){
               margin: 0; 
               background: #fff;
               color: #333;
-              font-size: 13px;
+              font-size: 11px;
             }
             .header {
               text-align: center;
-              margin-bottom: 25px;
-              padding-bottom: 15px;
-              border-bottom: 3px solid #667eea;
+              margin-bottom: 12px;
+              padding-bottom: 8px;
+              border-bottom: 2px solid #667eea;
             }
             .header h1 {
               color: #667eea;
-              font-size: 22px;
-              margin: 0 0 8px 0;
+              font-size: 18px;
+              margin: 0 0 4px 0;
               font-weight: bold;
             }
             .period {
               color: #666;
-              font-size: 13px;
+              font-size: 10px;
               margin: 0;
             }
             .section {
-              margin-bottom: 30px;
+              margin-bottom: 15px;
               page-break-inside: avoid;
             }
             .section-title {
               background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
               color: #fff;
-              padding: 10px 18px;
-              font-size: 15px;
+              padding: 6px 12px;
+              font-size: 13px;
               font-weight: bold;
               border-radius: 6px;
-              margin-bottom: 12px;
+              margin-bottom: 8px;
               box-shadow: 0 2px 8px rgba(102,126,234,0.3);
             }
             table {
               width: 100%;
               border-collapse: collapse;
-              font-size: 12px;
-              margin-bottom: 15px;
+              font-size: 10px;
+              margin-bottom: 10px;
             }
             th {
               background: #f3f4f6;
@@ -253,25 +253,25 @@ export default function Reports(){
             .summary-box {
               display: inline-block;
               background: #f3f4f6;
-              padding: 12px 20px;
-              border-radius: 8px;
-              margin: 8px;
+              padding: 8px 14px;
+              border-radius: 6px;
+              margin: 4px;
               text-align: center;
-              min-width: 140px;
+              min-width: 110px;
             }
             .summary-label {
-              font-size: 11px;
+              font-size: 9px;
               color: #666;
-              margin-bottom: 4px;
+              margin-bottom: 2px;
             }
             .summary-value {
-              font-size: 22px;
+              font-size: 18px;
               font-weight: bold;
               color: #667eea;
             }
             .summary-container {
               text-align: center;
-              margin: 15px 0;
+              margin: 10px 0;
             }
             .no-data {
               text-align: center;
