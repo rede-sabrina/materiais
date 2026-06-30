@@ -213,25 +213,6 @@ export default function Reports(){
               margin-bottom: 12px;
               box-shadow: 0 2px 8px rgba(102,126,234,0.3);
             }
-            /* Tabela Total Geral de Materiais - Compacta */
-            .section:nth-of-type(2) table {
-              table-layout: fixed;
-              width: 85%;
-              margin: 0 auto;
-            }
-            .section:nth-of-type(2) th {
-              padding: 6px 8px;
-              font-size: 11px;
-            }
-            .section:nth-of-type(2) td {
-              padding: 5px 8px;
-              font-size: 11px;
-            }
-            .section:nth-of-type(2) td:first-child {
-              overflow: hidden;
-              text-overflow: ellipsis;
-              white-space: nowrap;
-            }
             table {
               width: 100%;
               border-collapse: collapse;
@@ -385,6 +366,182 @@ export default function Reports(){
     setTimeout(()=>{ w.print() }, 250)
   }
 
+  // Imprimir relatório da aba "Por Loja"
+  function handlePrintByStore(){
+    if(!report) return
+    
+    const storeReports = getStoreReport(selectedStore)
+    if(!storeReports || storeReports.length === 0) return
+    
+    const displayTitle = selectedStore && selectedStore !== 'all' 
+      ? `Relatório por Loja - ${selectedStore}`
+      : 'Relatório por Loja - Todas as Lojas'
+    
+    let html = `
+      <html>
+        <head>
+          <title>${displayTitle}</title>
+          <style>
+            @page { 
+              size: A4; 
+              margin: 1.5cm; 
+            }
+            @media print {
+              body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            }
+            body { 
+              font-family: Arial, Helvetica, sans-serif; 
+              padding: 0; 
+              margin: 0; 
+              background: #fff;
+              color: #333;
+              font-size: 12px;
+            }
+            .header {
+              text-align: center;
+              margin-bottom: 25px;
+              padding-bottom: 15px;
+              border-bottom: 3px solid #667eea;
+            }
+            .header h1 {
+              color: #667eea;
+              font-size: 20px;
+              margin: 0 0 8px 0;
+              font-weight: bold;
+            }
+            .period {
+              color: #666;
+              font-size: 12px;
+              margin: 0;
+            }
+            .store-block {
+              page-break-inside: avoid;
+              margin-bottom: 30px;
+              border: 2px solid #667eea;
+              border-radius: 8px;
+              overflow: hidden;
+            }
+            .store-header {
+              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+              color: #fff;
+              padding: 12px 18px;
+              font-size: 16px;
+              font-weight: bold;
+            }
+            .store-stats {
+              background: #f3f4f6;
+              padding: 10px 18px;
+              display: flex;
+              gap: 20px;
+              border-bottom: 1px solid #e5e7eb;
+            }
+            .stat-item {
+              font-size: 12px;
+            }
+            .stat-label {
+              color: #666;
+              font-size: 11px;
+            }
+            .stat-value {
+              color: #667eea;
+              font-weight: bold;
+              font-size: 16px;
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              font-size: 11px;
+            }
+            th {
+              background: #f3f4f6;
+              color: #374151;
+              font-weight: bold;
+              padding: 8px 10px;
+              text-align: left;
+              border-bottom: 2px solid #9ca3af;
+            }
+            td {
+              padding: 7px 10px;
+              border-bottom: 1px solid #e5e7eb;
+              color: #1f2937;
+            }
+            tr:nth-child(even) {
+              background: #f9fafb;
+            }
+            .text-right {
+              text-align: right;
+            }
+            .text-blue {
+              color: #4f46e5;
+              font-weight: bold;
+            }
+            .footer {
+              margin-top: 30px;
+              padding-top: 15px;
+              border-top: 2px solid #e5e7eb;
+              text-align: center;
+              color: #999;
+              font-size: 10px;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <h1>🏪 ${displayTitle}</h1>
+            <p class="period">Período: <strong>${new Date(startDate+'T00:00:00').toLocaleDateString('pt-BR')}</strong> até <strong>${new Date(endDate+'T23:59:59').toLocaleDateString('pt-BR')}</strong></p>
+          </div>
+          
+          ${storeReports.map(storeReport => `
+            <div class="store-block">
+              <div class="store-header">
+                🏪 ${storeReport.loja}
+              </div>
+              <div class="store-stats">
+                <div class="stat-item">
+                  <div class="stat-label">Pedidos no período</div>
+                  <div class="stat-value">${storeReport.totalOrders}</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-label">Total de itens</div>
+                  <div class="stat-value">${storeReport.totalItems}</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-label">Materiais diferentes</div>
+                  <div class="stat-value">${storeReport.materiais.length}</div>
+                </div>
+              </div>
+              <table>
+                <thead>
+                  <tr>
+                    <th style="width: 75%;">Material</th>
+                    <th class="text-right" style="width: 25%;">Quantidade</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${storeReport.materiais.map(m => `
+                    <tr>
+                      <td>${m.material}</td>
+                      <td class="text-right text-blue">${m.quantidade}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          `).join('')}
+          
+          <div class="footer">
+            Relatório gerado em ${new Date().toLocaleString('pt-BR')} • Total de lojas: ${storeReports.length}
+          </div>
+        </body>
+      </html>
+    `
+    
+    const w = window.open('', '_blank')
+    w.document.write(html)
+    w.document.close()
+    setTimeout(()=>{ w.print() }, 250)
+  }
+
   if(loading) return <div>Carregando...</div>
   if(accessDenied) return <div>Acesso restrito: somente administradores</div>
 
@@ -422,7 +579,9 @@ export default function Reports(){
         </div>
         <div className="flex gap-2">
           <button onClick={handleGenerate} className="px-3 py-1 bg-primary text-white rounded">Gerar Relatório</button>
-          <button onClick={handlePrint} className="px-3 py-1 bg-slate-700 text-white rounded">Imprimir Relatório</button>
+          <button onClick={activeTab==='overview' ? handlePrint : handlePrintByStore} className="px-3 py-1 bg-slate-700 text-white rounded">
+            {activeTab==='overview' ? 'Imprimir Visão Geral' : 'Imprimir Por Loja'}
+          </button>
         </div>
       </div>
 
