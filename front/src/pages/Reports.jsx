@@ -183,25 +183,27 @@ export default function Reports(){
               font-size: 11px;
             }
             .header {
-              text-align: center;
-              margin-bottom: 12px;
-              padding-bottom: 8px;
-              border-bottom: 2px solid #667eea;
+              text-align: right;
+              margin-bottom: 8px;
+              padding-bottom: 0;
+              border-bottom: none;
             }
             .header h1 {
-              color: #667eea;
-              font-size: 18px;
-              margin: 0 0 4px 0;
-              font-weight: bold;
+              display: none;
             }
             .period {
               color: #666;
               font-size: 10px;
               margin: 0;
+              text-align: right;
             }
             .section {
               margin-bottom: 15px;
+              margin-top: 0;
               page-break-inside: avoid;
+            }
+            .section:first-child {
+              margin-top: 0;
             }
             .section-title {
               background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -332,7 +334,7 @@ export default function Reports(){
             <p class="period">Período: <strong>${new Date(startDate+'T00:00:00').toLocaleDateString('pt-BR')}</strong> até <strong>${new Date(endDate+'T23:59:59').toLocaleDateString('pt-BR')}</strong></p>
           </div>
           <div class="section">
-            <div class="section-title">📋 Total Geral de Materiais</div>
+            <div class="section-title">Total Geral de Materiais</div>
             ${
   report.materialTotals.length > 0
     ? `
@@ -367,7 +369,7 @@ export default function Reports(){
           </div>
 
           <div class="section">
-            <div class="section-title">🏪 Distribuição por Loja</div>
+            <div class="section-title">Distribuição por Loja</div>
             ${report.materialTotals.length > 0 ? `
             <table style="font-size: 11px;">
               <thead>

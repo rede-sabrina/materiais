@@ -1,91 +1,199 @@
-# Plataforma Devolucao 🚚📦
+# 📦 Sistema de Gestão de Pedidos de Materiais
 
-Painel de devolucoes para upload de XML de NF-e, criacao e acompanhamento de devolucoes, com perfis de loja e admin.
+Sistema completo para gestão e distribuição de materiais entre lojas da Rede Sabrina.
 
-## Visao geral ✨
-- Frontend: React + Vite + Tailwind (pasta [front](front))
-- Backend: API Express embarcada como serverless em [front/api](front/api) e [front/api-src](front/api-src)
-- Banco: MongoDB (Mongoose)
+## 🚀 Funcionalidades
 
-## Estrutura do projeto 🧱
-- [front](front): app web e API serverless
-	- [front/src](front/src): frontend React
-	- [front/api](front/api): entry da function
-	- [front/api-src](front/api-src): API Express e regras de negocio
-- [back](back): legado (nao usado)
+### 📋 Gestão de Pedidos
+- **Criar Pedidos**: Interface intuitiva para seleção de produtos e quantidades
+- **Acompanhamento**: Visualização de todos os pedidos com filtros por período
+- **Status**: Controle de status (Pendente, Impresso, Concluído)
+- **Impressão**: 
+  - Matriz de separação em uma única folha (formato paisagem)
+  - Relatórios detalhados por loja
+  - Filtro automático apenas para pedidos pendentes
 
-## Requisitos ✅
-- Node.js 18+
-- MongoDB (Atlas ou local)
+### 🏪 Gestão por Loja
+- **Pedidos por Loja**: Visualização individualizada
+- **Histórico**: Acompanhamento de todos os pedidos da loja
+- **Relatórios Específicos**: Impressão de pedidos separados por loja
 
-## Como rodar localmente ▶️
+### 📊 Relatórios Gerenciais
+- **Dashboard**: Visão geral com KPIs e métricas principais
+  - Total de pedidos
+  - Total de itens solicitados
+  - Materiais diferentes
+  - Média de itens por pedido
+  - Top 5 materiais mais solicitados
+  - Pedidos por status
+  - Performance por loja (admin)
+
+- **Relatório de Período**:
+  - Total geral de materiais
+  - Distribuição por loja (matriz completa)
+  - Filtros de data personalizados
+  - Exportação para impressão
+
+### 📦 Gestão de Estoque (Admin)
+- **Cadastro de Produtos**: Código automático sequencial
+- **Ativar/Desativar**: Controle de disponibilidade
+- **Editar/Excluir**: Gestão completa do catálogo
+- **Paginação**: 15 produtos por página
+
+### 👥 Gestão de Usuários (Admin)
+- **Cadastro de Usuários**: Criação de novas contas
+- **Controle de Acesso**: Diferenciação entre ADMIN e LOJA
+- **Permissões**: 
+  - ADMIN: Acesso completo a todas as funcionalidades
+  - LOJA: Acesso restrito aos próprios pedidos
+
+## 🛠️ Tecnologias
+
+### Frontend
+- **React** com Vite
+- **React Router** para navegação
+- **TailwindCSS** para estilização
+- **Context API** para estado global
+
+### Backend
+- **Node.js** com Express
+- **MongoDB** (Atlas) para banco de dados
+- **JWT** para autenticação
+- **bcrypt** para hash de senhas
+
+## 📁 Estrutura do Projeto
+
+```
+materiais/
+├── front/
+│   ├── api-src/          # Backend (Node.js + Express)
+│   │   ├── controllers/  # Controladores da API
+│   │   ├── models/       # Modelos do MongoDB
+│   │   ├── routes/       # Rotas da API
+│   │   ├── services/     # Regras de negócio
+│   │   ├── middlewares/  # Auth e validações
+│   │   └── data/         # Dados fallback
+│   └── src/              # Frontend (React)
+│       ├── components/   # Componentes reutilizáveis
+│       ├── pages/        # Páginas da aplicação
+│       ├── services/     # Integração com API
+│       ├── utils/        # Funções utilitárias
+│       └── layouts/      # Layouts da aplicação
+└── README.md
+```
+
+## 🔐 Perfis de Acesso
+
+### ADMIN
+- ✅ Visualizar todos os pedidos de todas as lojas
+- ✅ Gerenciar produtos (criar, editar, excluir, ativar/desativar)
+- ✅ Gerenciar usuários
+- ✅ Acessar relatórios completos
+- ✅ Imprimir matrizes de separação
+- ✅ Alterar status de pedidos
+- ✅ Excluir pedidos
+
+### LOJA
+- ✅ Criar novos pedidos
+- ✅ Visualizar apenas seus próprios pedidos
+- ✅ Acompanhar status dos seus pedidos
+- ✅ Imprimir seus pedidos pendentes
+- ❌ Não acessa gestão de produtos
+- ❌ Não acessa gestão de usuários
+- ❌ Não vê pedidos de outras lojas
+
+## 🚀 Como Rodar
+
+### Pré-requisitos
+- Node.js 16+
+- MongoDB Atlas configurado
+- Variáveis de ambiente configuradas
+
+### Instalação
+
 ```bash
-cd "C:\Users\User\Desktop\plataforma devolucao\front"
+# Instalar dependências do frontend
+cd front
 npm install
+
+# Instalar dependências do backend
+cd api-src
+npm install
+
+# Configurar variáveis de ambiente
+# Criar arquivo .env com:
+# PORT=3000
+# MONGODB_URI=sua_connection_string
+# JWT_SECRET=seu_secret
+```
+
+### Execução
+
+```bash
+# Rodar backend (terminal 1)
+cd front/api-src
+npm run dev
+
+# Rodar frontend (terminal 2)
+cd front/src
 npm run dev
 ```
 
-## Variaveis de ambiente (front/.env) 🔐
-Essas variaveis sao usadas pela API serverless em [front/api-src](front/api-src).
+## 📄 Recursos de Impressão
 
-```text
-MONGO_URI=your_mongo_uri
-MONGO_DB=devolucao
-JWT_SECRET=algumsegredo
-FRONTEND_URL=https://seu-dominio.vercel.app
-FRONTEND_URLS=https://seu-dominio.vercel.app,https://seu-preview.vercel.app
-DEBUG_ERRORS=false
-ENABLE_OVERDUE_JOB=false
-```
+### Matriz de Separação
+- Formato paisagem (A4)
+- Todas as lojas em uma única folha
+- Produtos em ordem alfabética
+- Células coloridas por quantidade:
+  - 🟨 Amarelo claro: 1-4 unidades
+  - 🟧 Amarelo médio: 5-9 unidades
+  - 🟠 Laranja: 10+ unidades
+  - ⬜ Branco: Sem pedido
+- Apenas pedidos com status "Pendente"
+- Bordas destacadas (2px) para facilitar recorte
 
-Notas:
-- `FRONTEND_URLS` pode ser lista separada por virgula.
-- Para liberar todos os previews, use `FRONTEND_URLS=*`.
+### Relatório por Loja
+- Formato retrato (A4)
+- Cada loja em uma seção separada
+- Detalhes completos dos pedidos
+- Itens de cada pedido
+- Apenas pedidos pendentes
 
-## Autenticacao 🔑
-- Login em `/api/auth/login` retorna JWT.
-- Token e salvo em `sessionStorage` com TTL local de 4 horas.
-- O token e enviado via `Authorization: Bearer <token>`.
+### Relatório Gerencial
+- Formato paisagem (A4)
+- Resumo do período
+- Total de materiais
+- Matriz completa loja × material
+- Otimizado para caber em uma página
 
-## Perfis e permissoes 👥
-- **Admin**: ve relatorios, gerencia usuarios e pode atualizar protocolo.
-- **Loja**: ve apenas suas devolucoes.
+## 🔒 Segurança
 
-## Status das devolucoes 📌
-- Admin: `Pendente`, `Solicitado`, `Coletado`, `Concluido`, `Negado`.
-- Loja: `Pendente`, `Solicitado`, `Coletado`.
+- Autenticação JWT com expiração
+- Senhas criptografadas com bcrypt
+- Middleware de proteção de rotas
+- Separação de responsabilidades por perfil
+- Validação de ownership de pedidos
 
-## Lembretes 🔔
-Tela dedicada em [front/src/pages/Reminders.jsx](front/src/pages/Reminders.jsx).
+## 📊 Métricas e KPIs
 
-Regras:
-- **NFD pendente**: aparece quando a devolucao tem 2+ dias e nao possui `nfdNumber` nem `nfdDate`.
-- **Sem coleta**: aparece quando a devolucao tem 7+ dias e status nao e `Coletado` ou `Concluido`.
+O dashboard fornece:
+- Total de pedidos no período
+- Total de itens solicitados
+- Quantidade de materiais diferentes
+- Média de itens por pedido
+- Distribuição por status
+- Ranking de materiais mais solicitados
+- Performance por loja
 
-Observacoes:
-- Admin ve ambos os tipos.
-- Loja ve ambos os tipos.
-- Checklist e lixeira persistem por usuario no `sessionStorage`.
+## 🤝 Contribuição
 
-## Seed de devolucoes 🌱
-Script para inserir devolucoes pendentes no MongoDB:
+Este projeto foi desenvolvido para a Rede Sabrina. Para mudanças ou melhorias, entre em contato com a equipe de desenvolvimento.
 
-```bash
-cd "C:\Users\User\Desktop\plataforma devolucao\front"
-node scripts/seed-returns.mjs
-```
+## 📝 Licença
 
-## Pontos principais do codigo 🧭
-- API client: [front/src/services/api.js](front/src/services/api.js)
-- Auth middleware: [front/api-src/middlewares/auth.middleware.js](front/api-src/middlewares/auth.middleware.js)
-- Controller de devolucoes: [front/api-src/controllers/returns.controller.js](front/api-src/controllers/returns.controller.js)
-- Lembretes (helpers): [front/src/utils/reminders.js](front/src/utils/reminders.js)
+Uso interno - Rede Sabrina
 
-## Deploy na Vercel 🚀
-- Root Directory: `front`
-- Build Command: `npm run build`
-- Output: `dist`
-- Env vars: configure as mesmas do `.env`
+---
 
-## .env.example 🧪
-Arquivo de referencia em [/.env.example](/.env.example). Copie para `front/.env` e preencha.
+**Desenvolvido com ❤️ para otimizar a distribuição de materiais**
