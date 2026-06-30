@@ -60,47 +60,52 @@ export default function OrdersList(){
     return d.toLocaleString()
   }
 
-   // Print grouped by store (admin only)
-   function printByStore(){
-     const groups = {}
-     sorted.forEach(o=>{
-       const store = resolveStore(o)
-       if(!groups[store]) groups[store] = []
-       groups[store].push(o)
-     })
-     let html = `<html><head><title>Pedidos por Loja</title><style>
-        body{font-family:sans-serif;padding:20px; margin:0;}
-        h2{margin-top:30px; font-size:1.5rem;}
-        table{border-collapse:collapse;width:100%;margin-bottom:20px;}
-        th,td{border:1px solid #ddd;padding:8px;}
-        th{background:#f5f5f5;font-weight:600;}
-        tr:nth-child(even) td{background:#fafafa;}
-        .items-table{margin-top:5px;}
-        .items-table th{background:#e0e0e0;}
-      </style></head><body>`
-     Object.entries(groups).forEach(([store, list])=>{
-       html += `<h2>Loja: ${store}</h2>`
-       // Main orders table
-       html += `<table><tr><th>Número</th><th>Status</th><th>Data</th></tr>`
-       list.forEach(o=>{
-         html += `<tr><td>${o.numero}</td><td>${o.status}</td><td>${formatDate(o.createdAt||o.data)}</td></tr>`
-         // Items sub‑table for this order (without product code)
-         if(Array.isArray(o.itens) && o.itens.length>0){
-           html += `<tr><td colspan="3"><table class="items-table"><tr><th>Nome</th><th>Quantidade</th></tr>`
-           o.itens.forEach(item=>{
-             html += `<tr><td>${item.nome || ''}</td><td>${item.quantidade || ''}</td></tr>`
-           })
-           html += `</table></td></tr>`
-         }
-       })
-       html += `</table>`
-     })
-     html += `</body></html>`
-     const w = window.open('', '_blank')
-     w.document.write(html)
-     w.document.close()
-     w.print()
-   }
+    // Print grouped by store (admin only) with modern layout
+    function printByStore(){
+      const groups = {};
+      sorted.forEach(o=>{
+        const store = resolveStore(o);
+        if(!groups[store]) groups[store] = [];
+        groups[store].push(o);
+      });
+      let html = `<html><head><title>Pedidos por Loja</title><style>
+        body{font-family:Arial,Helvetica,Inter,sans-serif;padding:20px;margin:0;}
+        .store-section{margin-bottom:30px;}
+        .store-header{background:#2c3e50;color:#fff;padding:12px 20px;border-radius:8px;font-size:1.3rem;}
+        .order-block{page-break-inside:avoid;margin-bottom:20px;}
+        .order-table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid #ccc;border-radius:6px;overflow:hidden;}
+        .order-table th{background:#ecf0f1;padding:10px 12px;font-weight:600;text-align:left;}
+        .order-table td{padding:10px 12px;border-bottom:1px solid #ccc;vertical-align:middle;}
+        .order-table tr:nth-child(even){background:#fafafa;}
+        .order-number{font-weight:bold;color:#2980b9;}
+        .order-date{color:#7f8c8d;font-size:0.9rem;}
+        .items-label{margin-top:6px;margin-bottom:4px;font-size:0.95rem;color:#2c3e50;}
+        .items-table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid #bbb;border-radius:4px;overflow:hidden;}
+        .items-table th{background:#d6eaf8;padding:8px;font-weight:500;color:#2c3e50;}
+        .items-table td{padding:8px;border-bottom:1px solid #ccc;vertical-align:middle;}
+        .items-table tr:nth-child(even){background:#f2f9fc;}
+      </style></head><body>`;
+      Object.entries(groups).forEach(([store, list])=>{
+        html += `<div class="store-section"><div class="store-header">Loja: ${store}</div>`;
+        list.forEach(o=>{
+          html += `<div class="order-block"><table class="order-table"><thead><tr><th>Número do Pedido</th><th>Data</th></tr></thead><tbody><tr><td class="order-number">${o.numero}</td><td class="order-date">${formatDate(o.createdAt||o.data)}</td></tr></tbody></table>`;
+          if(Array.isArray(o.itens) && o.itens.length>0){
+            html += `<div class="items-label">Itens do pedido</div><table class="items-table"><thead><tr><th>Produto</th><th>Quantidade</th></tr></thead><tbody>`;
+            o.itens.forEach(item=>{
+              html += `<tr><td>${item.nome || ''}</td><td>${item.quantidade || ''}</td></tr>`;
+            });
+            html += `</tbody></table>`;
+          }
+          html += `</div>`; // close order-block
+        });
+        html += `</div>`; // close store-section
+      });
+      html += `</body></html>`;
+      const w = window.open('', '_blank');
+      w.document.write(html);
+      w.document.close();
+      w.print();
+    }
 
   return (
     <div className="space-y-4">
