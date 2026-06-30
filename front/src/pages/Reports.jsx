@@ -11,7 +11,7 @@ export default function Reports(){
   const [endDate, setEndDate] = useState('')        // YYYY‑MM‑DD
   const [report, setReport] = useState(null)
   const [activeTab, setActiveTab] = useState('overview') // 'overview' | 'byStore'
-  const [selectedStore, setSelectedStore] = useState('') // selected store for detail view
+  const [selectedStore, setSelectedStore] = useState('all') // 'all' ou nome da loja específica
 
   // -----------------------------------------------------------------
   // Load data on mount: verify admin, fetch orders & stores, set defaults
@@ -105,10 +105,31 @@ export default function Reports(){
   }
 
   // ---------------------------------------------------------------
-  // Generate report for specific store
+  // Generate report for specific store (or all stores)
   // ---------------------------------------------------------------
   function getStoreReport(storeName){
-    if(!report || !storeName) return null
+    if(!report) return null
+    
+    // Se não houver loja selecionada ou for 'all', retorna todas
+    if(!storeName || storeName === 'all'){
+      return report.storeTotals
+        .filter(s=> s.materiais.some(m=>m.quantidade>0))
+        .map(s=>{
+          const totalItems = s.materiais.reduce((a,b)=>a+(b.quantidade||0),0)
+          const storeOrders = orders.filter(o=>{
+            const inDateRange = dateInRange(new Date(o.createdAt||o.data).toISOString(), startDate, endDate)
+            return inDateRange && (o.loja === s.loja)
+          }).length
+          return {
+            loja: s.loja,
+            materiais: s.materiais.filter(m=>m.quantidade>0),
+            totalItems,
+            totalOrders: storeOrders
+          }
+        })
+    }
+    
+    // Retorna apenas a loja selecionada
     const storeData = report.storeTotals.find(s=>s.loja===storeName)
     if(!storeData) return null
     const totalItems = storeData.materiais.reduce((a,b)=>a+(b.quantidade||0),0)
@@ -116,12 +137,12 @@ export default function Reports(){
       const inDateRange = dateInRange(new Date(o.createdAt||o.data).toISOString(), startDate, endDate)
       return inDateRange && (o.loja === storeName)
     }).length
-    return {
+    return [{
       loja: storeName,
       materiais: storeData.materiais.filter(m=>m.quantidade>0),
       totalItems,
       totalOrders: storeOrders
-    }
+    }]
   }
 
   // ---------------------------------------------------------------
@@ -472,56 +493,61 @@ export default function Reports(){
         <div className="space-y-6 mt-6">
           <Card>
             <div className="flex items-center gap-4 mb-4">
-              <label className="text-sm font-medium">Selecione a loja:</label>
+              <label className="text-sm font-medium">Filtrar por loja:</label>
               <select 
                 value={selectedStore} 
                 onChange={e=>setSelectedStore(e.target.value)}
                 className="border px-3 py-2 rounded flex-1 max-w-xs"
               >
-                <option value="">Selecione uma loja...</option>
+                <option value="all">Todas as lojas</option>
                 {stores.map(s=> (
                   <option key={s} value={s}>{s}</option>
                 ))}
               </select>
             </div>
 
-            {selectedStore && (()=>{
-              const storeReport = getStoreReport(selectedStore)
-              if(!storeReport) return <div className="text-gray-500">Nenhum dado para esta loja</div>
+            {(()=>{
+              const storeReports = getStoreReport(selectedStore)
+              if(!storeReports || storeReports.length === 0) return <div className="text-gray-500">Nenhuma loja com dados neste período</div>
+              
               return (
-                <div className="space-y-4">
-                  <div className="bg-blue-50 p-4 rounded">
-                    <h3 className="text-lg font-semibold text-blue-800">{storeReport.loja}</h3>
-                    <div className="flex gap-6 mt-2 text-sm">
-                      <div>Pedidos no período: <strong className="text-blue-700">{storeReport.totalOrders}</strong></div>
-                      <div>Total de itens: <strong className="text-blue-700">{storeReport.totalItems}</strong></div>
+                <div className="space-y-6">
+                  {storeReports.map(storeReport => (
+                    <div key={storeReport.loja} className="border rounded-lg p-4 bg-gray-50">
+                      <div className="bg-blue-50 p-4 rounded mb-4">
+                        <h3 className="text-lg font-semibold text-blue-800">🏪 {storeReport.loja}</h3>
+                        <div className="flex gap-6 mt-2 text-sm">
+                          <div>Pedidos no período: <strong className="text-blue-700">{storeReport.totalOrders}</strong></div>
+                          <div>Total de itens: <strong className="text-blue-700">{storeReport.totalItems}</strong></div>
+                        </div>
+                      </div>
+                      
+                      <h4 className="font-medium mb-2">Materiais solicitados</h4>
+                      <div className="overflow-auto">
+                        <table className="w-full text-sm">
+                          <thead className="bg-gray-100">
+                            <tr>
+                              <th className="p-2 text-left">Material</th>
+                              <th className="p-2 text-right">Quantidade</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {storeReport.materiais.map(m=> (
+                              <tr key={m.material} className="border-t">
+                                <td className="p-2">{m.material}</td>
+                                <td className="p-2 text-right font-medium text-blue-700">{m.quantidade}</td>
+                              </tr>
+                            ))}
+                            {storeReport.materiais.length === 0 && (
+                              <tr>
+                                <td colSpan={2} className="p-4 text-center text-gray-500">Nenhum material solicitado neste período</td>
+                              </tr>
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
-                  </div>
-                  
-                  <h4 className="font-medium">Materiais solicitados</h4>
-                  <div className="overflow-auto">
-                    <table className="w-full text-sm">
-                      <thead className="bg-gray-100">
-                        <tr>
-                          <th className="p-2 text-left">Material</th>
-                          <th className="p-2 text-right">Quantidade</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {storeReport.materiais.map(m=> (
-                          <tr key={m.material} className="border-t">
-                            <td className="p-2">{m.material}</td>
-                            <td className="p-2 text-right font-medium text-blue-700">{m.quantidade}</td>
-                          </tr>
-                        ))}
-                        {storeReport.materiais.length === 0 && (
-                          <tr>
-                            <td colSpan={2} className="p-4 text-center text-gray-500">Nenhum material solicitado neste período</td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
+                  ))}
                 </div>
               )
             })()}
