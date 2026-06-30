@@ -73,15 +73,14 @@ export default function OrderDetail(){
         <table className="w-full text-left mt-2">
           <thead>
             <tr className="text-sm text-slate-500">
-<th className="p-2">Código</th>
-               <th className="p-2">Nome</th>
-               <th className="p-2">Quantidade</th>
+<th className="p-2">Nome</th>
+                <th className="p-2">Quantidade</th>
             </tr>
           </thead>
           <tbody>
             {order.itens && order.itens.map((i,idx)=> (
               <tr key={idx} className="border-t">
-<td className="p-2">{i.codigo}</td>
+
                  <td className="p-2">{i.nome}</td>
                  <td className="p-2">{i.quantidade}</td>
               </tr>

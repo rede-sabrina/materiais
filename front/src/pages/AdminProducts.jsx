@@ -52,7 +52,7 @@ async function activateProductApi(codigo){
 export default function AdminProducts(){
   const PER_PAGE = 15
   const [products, setProducts] = useState([])
-  const [newProd, setNewProd] = useState({ codigo:'', nome:'' })
+  const [newProd, setNewProd] = useState({ nome:'' })
   const [editing, setEditing] = useState(null) // { codigo, nome }
   const [page, setPage] = useState(1)
   const { showModal } = useModal()
@@ -67,13 +67,17 @@ export default function AdminProducts(){
 
   // ---------- CREATE ----------
   async function handleAdd(){
-    const { codigo, nome } = newProd
-    if(!codigo || !nome){ alert('Preencha código e nome'); return }
+    const { nome } = newProd
+    if(!nome){ alert('Preencha o nome do produto'); return }
+    // gerar próximo código sequencial (ex.: 01, 02, ...)
+    const numericCodes = products.map(p=>parseInt(p.codigo,10)).filter(n=>!isNaN(n))
+    const maxCode = numericCodes.length ? Math.max(...numericCodes) : 0
+    const nextCode = String(maxCode + 1).padStart(2, '0')
     try{
-      const created = await createProductApi({ codigo, nome })
+      const created = await createProductApi({ codigo: nextCode, nome })
       setProducts(prev=>[created, ...prev])
-      setNewProd({ codigo:'', nome:'' })
-      showModal({title:'Produto criado',body:`${created.nome} adicionado.`,confirmLabel:'Fechar'})
+      setNewProd({ nome:'' })
+      showModal({title:'Produto criado',body:`${created.nome} adicionado com código ${nextCode}.`,confirmLabel:'Fechar'})
     }catch(e){ console.error(e); alert('Erro ao criar') }
   }
 
@@ -128,69 +132,64 @@ export default function AdminProducts(){
       <div className="card p-4">
         {/* ADIÇÃO */}
         <h3 className="font-medium mb-2">Adicionar novo produto</h3>
-        <div className="flex items-center gap-2 mb-4">
-          <input placeholder="Código" className="border px-2 py-1 rounded w-24"
-                 value={newProd.codigo}
-                 onChange={e=>setNewProd(p=>({ ...p, codigo:e.target.value }))} />
-          <input placeholder="Nome" className="border px-2 py-1 rounded w-48"
-                 value={newProd.nome}
-                 onChange={e=>setNewProd(p=>({ ...p, nome:e.target.value }))} />
-          <button onClick={handleAdd}
-                  className="px-3 py-1 bg-primary text-white rounded">Adicionar</button>
-        </div>
+<div className="flex items-center gap-2 mb-4">
+           <input placeholder="Nome" className="border px-2 py-1 rounded w-48"
+                  value={newProd.nome}
+                  onChange={e=>setNewProd(p=>({ ...p, nome:e.target.value }))} />
+           <button onClick={handleAdd}
+                   className="px-3 py-1 bg-primary text-white rounded">Adicionar</button>
+         </div>
 
         <hr className="my-6" />
         <h3 className="font-medium mb-2">Produtos cadastrados (página {page}/{totalPages})</h3>
         <div className="overflow-x-auto">
           <table className="min-w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-slate-100 text-sm text-slate-700">
-                <th className="p-2">Código</th>
-                <th className="p-2">Nome</th>
-                <th className="p-2">Status</th>
-                <th className="p-2">Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              {pageItems.map(p=>(
-                <tr key={p.codigo || p.ean} className="border-t">
-                  <td className="p-2">{p.codigo}</td>
-                  <td className="p-2">
-                    {editing && editing.codigo===p.codigo ? (
-                      <input className="border px-2 py-1 rounded w-48"
-                             value={editing.nome}
-                             onChange={e=>setEditing(ed=>({ ...ed, nome:e.target.value }))} />
-                    ) : p.nome}
-                  </td>
-                  <td className="p-2">{p.active===false?'Inativo':'Ativo'}</td>
-                  <td className="p-2 flex gap-2">
-                    {editing && editing.codigo===p.codigo ? (
-                      <>
-                        <button onClick={handleUpdate}
-                                className="px-2 py-1 bg-primary text-white rounded text-sm">Salvar</button>
-                        <button onClick={()=>setEditing(null)}
-                                className="px-2 py-1 border rounded text-sm">Cancelar</button>
-                      </>
-                    ) : (
-                      <>
-                        <button onClick={()=>startEdit(p)}
-                                className="px-2 py-1 bg-primary text-white rounded text-sm">Editar</button>
-                        {p.active!==false && (
-                          <button onClick={()=>handleDeactivate(p.codigo)}
-                                  className="px-2 py-1 bg-red-600 text-white rounded text-sm">Desativar</button>
-                        )}
-                        {p.active===false && (
-                          <button onClick={()=>handleActivate(p.codigo)}
-                                  className="px-2 py-1 bg-green-600 text-white rounded text-sm">Ativar</button>
-                        )}
-                        <button onClick={()=>handleDelete(p.codigo)}
-                                className="px-2 py-1 bg-red-600 text-white rounded text-sm">Excluir</button>
-                      </>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
+<thead>
+               <tr className="bg-slate-100 text-sm text-slate-700">
+                 <th className="p-2">Nome</th>
+                 <th className="p-2">Status</th>
+                 <th className="p-2">Ações</th>
+               </tr>
+             </thead>
+<tbody>
+               {pageItems.map(p=>(
+                 <tr key={p.codigo || p.ean} className="border-t">
+                   <td className="p-2">
+                     {editing && editing.codigo===p.codigo ? (
+                       <input className="border px-2 py-1 rounded w-48"
+                              value={editing.nome}
+                              onChange={e=>setEditing(ed=>({ ...ed, nome:e.target.value }))} />
+                     ) : p.nome}
+                   </td>
+                   <td className="p-2">{p.active===false?'Inativo':'Ativo'}</td>
+                   <td className="p-2 flex gap-2">
+                     {editing && editing.codigo===p.codigo ? (
+                       <>
+                         <button onClick={handleUpdate}
+                                 className="px-2 py-1 bg-primary text-white rounded text-sm">Salvar</button>
+                         <button onClick={()=>setEditing(null)}
+                                 className="px-2 py-1 border rounded text-sm">Cancelar</button>
+                       </>
+                     ) : (
+                       <>
+                         <button onClick={()=>startEdit(p)}
+                                 className="px-2 py-1 bg-primary text-white rounded text-sm">Editar</button>
+                         {p.active!==false && (
+                           <button onClick={()=>handleDeactivate(p.codigo)}
+                                   className="px-2 py-1 bg-red-600 text-white rounded text-sm">Desativar</button>
+                         )}
+                         {p.active===false && (
+                           <button onClick={()=>handleActivate(p.codigo)}
+                                   className="px-2 py-1 bg-green-600 text-white rounded text-sm">Ativar</button>
+                         )}
+                         <button onClick={()=>handleDelete(p.codigo)}
+                                 className="px-2 py-1 bg-red-600 text-white rounded text-sm">Excluir</button>
+                       </>
+                     )}
+                   </td>
+                 </tr>
+               ))}
+             </tbody>
           </table>
         </div>
 

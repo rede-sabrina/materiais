@@ -68,18 +68,27 @@ export default function OrdersList(){
        if(!groups[store]) groups[store] = []
        groups[store].push(o)
      })
-     let html = `<html><head><title>Pedidos por Loja</title><style>body{font-family:sans-serif;padding:20px;}h2{margin-top:40px;}table{border-collapse:collapse;width:100%;margin-bottom:20px;}th,td{border:1px solid #ccc;padding:8px;}</style></head><body>`
+     let html = `<html><head><title>Pedidos por Loja</title><style>
+        body{font-family:sans-serif;padding:20px; margin:0;}
+        h2{margin-top:30px; font-size:1.5rem;}
+        table{border-collapse:collapse;width:100%;margin-bottom:20px;}
+        th,td{border:1px solid #ddd;padding:8px;}
+        th{background:#f5f5f5;font-weight:600;}
+        tr:nth-child(even) td{background:#fafafa;}
+        .items-table{margin-top:5px;}
+        .items-table th{background:#e0e0e0;}
+      </style></head><body>`
      Object.entries(groups).forEach(([store, list])=>{
        html += `<h2>Loja: ${store}</h2>`
        // Main orders table
        html += `<table><tr><th>Número</th><th>Status</th><th>Data</th></tr>`
        list.forEach(o=>{
          html += `<tr><td>${o.numero}</td><td>${o.status}</td><td>${formatDate(o.createdAt||o.data)}</td></tr>`
-         // Items sub‑table for this order
+         // Items sub‑table for this order (without product code)
          if(Array.isArray(o.itens) && o.itens.length>0){
-           html += `<tr><td colspan="3"><table><tr><th>Código</th><th>Nome</th><th>Quantidade</th></tr>`
+           html += `<tr><td colspan="3"><table class="items-table"><tr><th>Nome</th><th>Quantidade</th></tr>`
            o.itens.forEach(item=>{
-             html += `<tr><td>${item.codigo || ''}</td><td>${item.nome || ''}</td><td>${item.quantidade || ''}</td></tr>`
+             html += `<tr><td>${item.nome || ''}</td><td>${item.quantidade || ''}</td></tr>`
            })
            html += `</table></td></tr>`
          }

@@ -68,11 +68,11 @@ export default function Sidebar(){
           <Item to="/pedidos/novo">Novo Pedido</Item>
           {isAdmin && (
             <>
-              <Item to="/admin/users">Gerenciar Usuários</Item>
               <Item to="/admin/produtos">Estoque</Item>
+              <Item to="/reports">Relatórios</Item>
+              <Item to="/admin/users">Gerenciar Usuários</Item>
             </>
           )}
-          {isAdmin && <Item to="/reports">Relatórios</Item>}
         </nav>
       </div>
     </aside>
