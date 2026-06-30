@@ -257,11 +257,10 @@ export default function DashboardHome() {
       <div className="bg-white rounded-xl shadow-md p-6">
         <h3 className="text-lg font-bold text-gray-800 mb-4">📍 Pedidos por Status</h3>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-          {['Pendente', 'Impresso', 'Concluído'].map(status => {
+          {['Pendente', 'Concluído'].map(status => {
             const count = stats.statusCount[status] || 0
             const colors = {
               'Pendente': 'bg-yellow-100 text-yellow-800 border-yellow-300',
-              'Impresso': 'bg-blue-100 text-blue-800 border-blue-300',
               'Concluído': 'bg-green-100 text-green-800 border-green-300'
             }
             return (
@@ -271,7 +270,7 @@ export default function DashboardHome() {
               </div>
             )
           })}
-          {Object.keys(stats.statusCount).filter(s => !['Pendente', 'Impresso', 'Concluído'].includes(s)).map(status => (
+          {Object.keys(stats.statusCount).filter(s => !['Pendente', 'Concluído'].includes(s)).map(status => (
             <div key={status} className="p-4 rounded-lg border-2 bg-gray-100 text-gray-800 border-gray-300">
               <p className="text-sm font-medium opacity-80">{status}</p>
               <p className="text-3xl font-bold mt-1">{stats.statusCount[status] || 0}</p>

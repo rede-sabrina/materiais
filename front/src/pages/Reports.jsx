@@ -183,19 +183,14 @@ export default function Reports(){
               font-size: 11px;
             }
             .header {
-              text-align: right;
-              margin-bottom: 8px;
-              padding-bottom: 0;
-              border-bottom: none;
-            }
-            .header h1 {
               display: none;
             }
-            .period {
+            .period-inline {
               color: #666;
               font-size: 10px;
-              margin: 0;
-              text-align: right;
+              margin-left: 10px;
+              font-weight: normal;
+              display: inline-block;
             }
             .section {
               margin-bottom: 15px;
@@ -204,6 +199,7 @@ export default function Reports(){
             }
             .section:first-child {
               margin-top: 0;
+              padding-top: 0;
             }
             .section-title {
               background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -214,6 +210,7 @@ export default function Reports(){
               border-radius: 6px;
               margin-bottom: 8px;
               box-shadow: 0 2px 8px rgba(102,126,234,0.3);
+              display: inline-block;
             }
             table {
               width: 100%;
@@ -329,12 +326,9 @@ export default function Reports(){
           </style>
         </head>
         <body>
-          <div class="header">
-            <h1>📊 Relatório de Pedidos</h1>
-            <p class="period">Período: <strong>${new Date(startDate+'T00:00:00').toLocaleDateString('pt-BR')}</strong> até <strong>${new Date(endDate+'T23:59:59').toLocaleDateString('pt-BR')}</strong></p>
-          </div>
           <div class="section">
             <div class="section-title">Total Geral de Materiais</div>
+            <span class="period-inline">• Período: <strong>${new Date(startDate+'T00:00:00').toLocaleDateString('pt-BR')}</strong> até <strong>${new Date(endDate+'T23:59:59').toLocaleDateString('pt-BR')}</strong></span>
             ${
   report.materialTotals.length > 0
     ? `
@@ -394,7 +388,7 @@ export default function Reports(){
             ` : '<div class="no-data">Nenhum dado para exibir</div>'}
           </div>
 
-          <div style="margin-top: 30px; padding-top: 15px; border-top: 2px solid #e5e7eb; text-align: center; color: #999; font-size: 10px;">
+          <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid #e5e7eb; text-align: center; color: #999; font-size: 9px;">
             Relatório gerado em ${new Date().toLocaleString('pt-BR')}
           </div>
         </body>
