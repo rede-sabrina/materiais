@@ -60,28 +60,38 @@ export default function OrdersList(){
     return d.toLocaleString()
   }
 
-  // Print grouped by store (admin only)
-  function printByStore(){
-    const groups = {}
-    sorted.forEach(o=>{
-      const store = resolveStore(o)
-      if(!groups[store]) groups[store] = []
-      groups[store].push(o)
-    })
-    let html = `<html><head><title>Pedidos por Loja</title><style>body{font-family:sans-serif;padding:20px;}h2{margin-top:40px;}table{border-collapse:collapse;width:100%;}th,td{border:1px solid #ccc;padding:8px;}</style></head><body>`
-    Object.entries(groups).forEach(([store, list])=>{
-      html += `<h2>Loja: ${store}</h2><table><tr><th>Número</th><th>Status</th><th>Data</th></tr>`
-      list.forEach(o=>{
-        html += `<tr><td>${o.numero}</td><td>${o.status}</td><td>${formatDate(o.createdAt||o.data)}</td></tr>`
-      })
-      html += `</table>`
-    })
-    html += `</body></html>`
-    const w = window.open('', '_blank')
-    w.document.write(html)
-    w.document.close()
-    w.print()
-  }
+   // Print grouped by store (admin only)
+   function printByStore(){
+     const groups = {}
+     sorted.forEach(o=>{
+       const store = resolveStore(o)
+       if(!groups[store]) groups[store] = []
+       groups[store].push(o)
+     })
+     let html = `<html><head><title>Pedidos por Loja</title><style>body{font-family:sans-serif;padding:20px;}h2{margin-top:40px;}table{border-collapse:collapse;width:100%;margin-bottom:20px;}th,td{border:1px solid #ccc;padding:8px;}</style></head><body>`
+     Object.entries(groups).forEach(([store, list])=>{
+       html += `<h2>Loja: ${store}</h2>`
+       // Main orders table
+       html += `<table><tr><th>Número</th><th>Status</th><th>Data</th></tr>`
+       list.forEach(o=>{
+         html += `<tr><td>${o.numero}</td><td>${o.status}</td><td>${formatDate(o.createdAt||o.data)}</td></tr>`
+         // Items sub‑table for this order
+         if(Array.isArray(o.itens) && o.itens.length>0){
+           html += `<tr><td colspan="3"><table><tr><th>Código</th><th>Nome</th><th>Quantidade</th></tr>`
+           o.itens.forEach(item=>{
+             html += `<tr><td>${item.codigo || ''}</td><td>${item.nome || ''}</td><td>${item.quantidade || ''}</td></tr>`
+           })
+           html += `</table></td></tr>`
+         }
+       })
+       html += `</table>`
+     })
+     html += `</body></html>`
+     const w = window.open('', '_blank')
+     w.document.write(html)
+     w.document.close()
+     w.print()
+   }
 
   return (
     <div className="space-y-4">
