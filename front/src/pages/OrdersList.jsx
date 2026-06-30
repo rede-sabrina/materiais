@@ -125,6 +125,109 @@ export default function OrdersList(){
       setTimeout(()=>{ w.print(); }, 250);
     }
 
+    // Nova função: Imprimir Matriz Geral (todas as lojas em uma única folha)
+    function printMatrix(){
+      // Coletar todos os produtos únicos
+      const allProducts = new Map();
+      sorted.forEach(o=>{
+        (o.itens||[]).forEach(it=>{
+          const key = it.nome || it.codigo || 'Desconhecido';
+          if(!allProducts.has(key)){
+            allProducts.set(key, { nome: it.nome, codigo: it.codigo, ean: it.ean });
+          }
+        });
+      });
+
+      // Ordenar produtos alfabeticamente
+      const products = Array.from(allProducts.values()).sort((a,b)=> a.nome.localeCompare(b.nome));
+
+      // Coletar todas as lojas
+      const allStores = Array.from(new Set(sorted.map(o=> resolveStore(o)))).sort();
+
+      // Construir matriz: produto × loja → quantidade
+      const matrix = {};
+      products.forEach(p=>{
+        matrix[p.nome] = {};
+        allStores.forEach(s=>{ matrix[p.nome][s] = 0; });
+      });
+
+      // Preencher matriz com quantidades
+      sorted.forEach(o=>{
+        const store = resolveStore(o);
+        (o.itens||[]).forEach(it=>{
+          const nome = it.nome || it.codigo || 'Desconhecido';
+          if(matrix[nome]){
+            matrix[nome][store] += (Number(it.quantidade) || 0);
+          }
+        });
+      });
+
+      // Gerar HTML
+      let html = `<html><head><title>Matriz de Separação de Materiais</title><style>
+        @media print {
+          @page { margin: 1cm; size: A4 landscape; }
+          body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        }
+        body{font-family:Arial,Helvetica,sans-serif;padding:15px;margin:0;background:#fff;}
+        .header{text-align:center;margin-bottom:20px;padding-bottom:15px;border-bottom:3px solid #667eea;}
+        .header h1{color:#667eea;font-size:20px;margin:0 0 8px 0;font-weight:bold;}
+        .period{color:#666;font-size:12px;margin:0;}
+        .matrix-table{width:100%;border-collapse:collapse;font-size:10px;}
+        .matrix-table th{background:#667eea;color:#fff;padding:8px 6px;font-weight:bold;border:1px solid #5568d3;text-align:center;white-space:nowrap;}
+        .matrix-table td{padding:6px 4px;border:1px solid #d1d5db;text-align:center;vertical-align:middle;font-weight:600;}
+        .matrix-table .product-col{text-align:left;font-weight:bold;background:#f9fafb;color:#1f2937;min-width:150px;}
+        .matrix-table .qty-cell{background:#fef3c7;color:#92400e;}
+        .matrix-table .qty-high{background:#fbbf24;color:#92400e;font-weight:800;}
+        .matrix-table .qty-very-high{background:#f59e0b;color:#fff;font-weight:900;}
+        .matrix-table tr:nth-child(even) .product-col{background:#f3f4f6;}
+        .legend{margin-top:15px;padding:10px;background:#f9fafb;border-radius:6px;font-size:10px;}
+        .legend-item{display:inline-block;margin-right:15px;}
+        .legend-color{display:inline-block;width:16px;height:16px;margin-right:4px;border:1px solid #999;vertical-align:middle;}
+        .footer{margin-top:15px;text-align:center;color:#999;font-size:9px;border-top:1px solid #e5e7eb;padding-top:10px;}
+      </style></head><body>
+        <div class="header">
+          <h1>📦 Matriz de Separação de Materiais</h1>
+          <p class="period">Período: <strong>${new Date(startDate+'T00:00:00').toLocaleDateString('pt-BR')}</strong> até <strong>${new Date(endDate+'T23:59:59').toLocaleDateString('pt-BR')}</strong></p>
+        </div>
+        <table class="matrix-table">
+          <thead>
+            <tr>
+              <th class="product-col">Produto</th>
+              ${allStores.map(s=>`<th>${s.length > 15 ? s.substring(0,15)+'...' : s}</th>`).join('')}
+            </tr>
+          </thead>
+          <tbody>
+            ${products.map(p=>`
+              <tr>
+                <td class="product-col">${p.nome}</td>
+                ${allStores.map(s=>{
+                  const qty = matrix[p.nome][s] || 0;
+                  let cellClass = 'qty-cell';
+                  if(qty >= 10) cellClass = 'qty-very-high';
+                  else if(qty >= 5) cellClass = 'qty-high';
+                  return `<td class="${cellClass}">${qty > 0 ? qty : ''}</td>`;
+                }).join('')}
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+        <div class="legend">
+          <strong>Legenda:</strong>
+          <span class="legend-item"><span class="legend-color" style="background:#fef3c7"></span>1-4 un.</span>
+          <span class="legend-item"><span class="legend-color" style="background:#fbbf24"></span>5-9 un.</span>
+          <span class="legend-item"><span class="legend-color" style="background:#f59e0b"></span>10+ un.</span>
+        </div>
+        <div class="footer">
+          Matriz gerada em ${new Date().toLocaleString('pt-BR')} • Total de produtos: ${products.length} • Total de lojas: ${allStores.length}
+        </div>
+      </body></html>`;
+
+      const w = window.open('', '_blank');
+      w.document.write(html);
+      w.document.close();
+      setTimeout(()=>{ w.print(); }, 250);
+    }
+
   return (
     <div className="space-y-4">
       <h2 className="text-xl font-semibold">Registro Pedidos</h2>
@@ -134,7 +237,8 @@ export default function OrdersList(){
           <input type="date" value={startDate} onChange={e=>setStartDate(e.target.value)} className="border px-2 py-1 rounded" />
           <label className="text-sm">Até:</label>
           <input type="date" value={endDate} onChange={e=>setEndDate(e.target.value)} className="border px-2 py-1 rounded" />
-          <button onClick={printByStore} className="px-3 py-1 bg-primary text-white rounded">Imprimir por Loja</button>
+          <button onClick={printMatrix} className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700">📊 Imprimir Matriz de Separação</button>
+          <button onClick={printByStore} className="px-3 py-1 bg-primary text-white rounded">📦 Imprimir por Loja</button>
         </div>
       )}
       <div className="bg-white rounded-md shadow p-4">

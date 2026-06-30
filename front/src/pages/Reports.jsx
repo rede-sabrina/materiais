@@ -168,8 +168,8 @@ export default function Reports(){
           <style>
             @page { 
               size: A4 landscape; 
-              margin: 1.5cm; 
-              @page:first { margin-top: 2cm; }
+              margin: 1.2cm; 
+              @page:first { margin-top: 1.5cm; }
             }
             @media print {
               body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -180,57 +180,60 @@ export default function Reports(){
               margin: 0; 
               background: #fff;
               color: #333;
+              font-size: 13px;
             }
             .header {
               text-align: center;
-              margin-bottom: 30px;
-              padding-bottom: 20px;
+              margin-bottom: 25px;
+              padding-bottom: 15px;
               border-bottom: 3px solid #667eea;
             }
             .header h1 {
               color: #667eea;
-              font-size: 24px;
-              margin: 0 0 10px 0;
+              font-size: 22px;
+              margin: 0 0 8px 0;
               font-weight: bold;
             }
             .period {
               color: #666;
-              font-size: 14px;
+              font-size: 13px;
               margin: 0;
             }
             .section {
-              margin-bottom: 40px;
+              margin-bottom: 30px;
               page-break-inside: avoid;
             }
             .section-title {
               background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
               color: #fff;
-              padding: 12px 20px;
-              font-size: 16px;
+              padding: 10px 18px;
+              font-size: 15px;
               font-weight: bold;
               border-radius: 6px;
-              margin-bottom: 15px;
+              margin-bottom: 12px;
               box-shadow: 0 2px 8px rgba(102,126,234,0.3);
             }
             table {
               width: 100%;
               border-collapse: collapse;
-              font-size: 11px;
+              font-size: 12px;
               margin-bottom: 15px;
             }
             th {
               background: #f3f4f6;
               color: #374151;
               font-weight: bold;
-              padding: 10px 8px;
+              padding: 8px 10px;
               text-align: left;
               border-bottom: 2px solid #9ca3af;
               white-space: nowrap;
+              font-size: 12px;
             }
             td {
-              padding: 8px;
+              padding: 7px 10px;
               border-bottom: 1px solid #e5e7eb;
               color: #1f2937;
+              font-size: 12px;
             }
             tr:nth-child(even) {
               background: #f9fafb;
@@ -250,31 +253,31 @@ export default function Reports(){
             .summary-box {
               display: inline-block;
               background: #f3f4f6;
-              padding: 15px 25px;
+              padding: 12px 20px;
               border-radius: 8px;
-              margin: 10px;
+              margin: 8px;
               text-align: center;
-              min-width: 150px;
+              min-width: 140px;
             }
             .summary-label {
               font-size: 11px;
               color: #666;
-              margin-bottom: 5px;
+              margin-bottom: 4px;
             }
             .summary-value {
-              font-size: 24px;
+              font-size: 22px;
               font-weight: bold;
               color: #667eea;
             }
             .summary-container {
               text-align: center;
-              margin: 20px 0;
+              margin: 15px 0;
             }
             .no-data {
               text-align: center;
               color: #999;
               font-style: italic;
-              padding: 30px;
+              padding: 25px;
             }
           </style>
         </head>
@@ -308,8 +311,8 @@ export default function Reports(){
             <table>
               <thead>
                 <tr>
-                  <th style="width: 70%;">Material</th>
-                  <th class="text-right" style="width: 30%;">Quantidade Total</th>
+                  <th style="width: 65%;">Material</th>
+                  <th class="text-right" style="width: 35%;">Qtd. Total</th>
                 </tr>
               </thead>
               <tbody>
@@ -327,21 +330,21 @@ export default function Reports(){
           <div class="section">
             <div class="section-title">🏪 Distribuição por Loja</div>
             ${report.materialTotals.length > 0 ? `
-            <table style="font-size: 10px;">
+            <table style="font-size: 11px;">
               <thead>
                 <tr>
-                  <th style="width: 25%; min-width: 150px;">Material</th>
-                  ${stores.map(s => `<th class="text-right" style="min-width: 80px;">${s.length > 20 ? s.substring(0,20)+'...' : s}</th>`).join('')}
+                  <th style="width: 20%; min-width: 120px;">Material</th>
+                  ${stores.map(s => `<th class="text-right" style="min-width: 70px; padding: 8px 6px;">${s.length > 18 ? s.substring(0,18)+'...' : s}</th>`).join('')}
                 </tr>
               </thead>
               <tbody>
                 ${report.materialTotals.map(m => `
                   <tr>
-                    <td style="font-weight: bold;">${m.nome}</td>
+                    <td style="font-weight: bold; padding: 7px 10px;">${m.nome}</td>
                     ${stores.map(s => {
                       const loja = report.storeTotals.find(st=>st.loja===s)
                       const qty = loja?.materiais.find(mat=>mat.material===m.nome)?.quantidade||0
-                      return `<td class="text-right ${qty > 0 ? 'font-bold text-blue' : ''}" style="color: ${qty > 0 ? '#4f46e5' : '#999'}">${qty}</td>`
+                      return `<td class="text-right ${qty > 0 ? 'font-bold text-blue' : ''}" style="color: ${qty > 0 ? '#4f46e5' : '#999'}; padding: 7px 6px;">${qty}</td>`
                     }).join('')}
                   </tr>
                 `).join('')}
@@ -350,7 +353,7 @@ export default function Reports(){
             ` : '<div class="no-data">Nenhum dado para exibir</div>'}
           </div>
 
-          <div style="margin-top: 40px; padding-top: 20px; border-top: 2px solid #e5e7eb; text-align: center; color: #999; font-size: 10px;">
+          <div style="margin-top: 30px; padding-top: 15px; border-top: 2px solid #e5e7eb; text-align: center; color: #999; font-size: 10px;">
             Relatório gerado em ${new Date().toLocaleString('pt-BR')}
           </div>
         </body>
