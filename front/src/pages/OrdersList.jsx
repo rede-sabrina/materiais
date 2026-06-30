@@ -43,12 +43,22 @@ export default function OrdersList(){
   }
 
   // filter by date range (admin only UI, but apply for all)
-  const filteredByDate = orders.filter(o=> {
-    const date = new Date(o.createdAt||o.data)
-    if(startDate && date < new Date(startDate)) return false
-    if(endDate && date > new Date(endDate)) return false
-    return true
-  })
+    const filteredByDate = orders.filter(o=> {
+      const date = new Date(o.createdAt||o.data);
+      // start date inclusive (00:00:00)
+      if(startDate){
+        const start = new Date(startDate);
+        start.setHours(0,0,0,0);
+        if(date < start) return false;
+      }
+      // end date inclusive (23:59:59.999)
+      if(endDate){
+        const end = new Date(endDate);
+        end.setHours(23,59,59,999);
+        if(date > end) return false;
+      }
+      return true;
+    })
 
   const sorted = [...filteredByDate].sort((a,b)=> new Date(b.createdAt||b.data||0) - new Date(a.createdAt||a.data||0))
   const totalPages = Math.max(1, Math.ceil(sorted.length / pageSize))
