@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { fetchOrders, fetchMe, fetchUsers, deleteOrder } from '../services/api'
+import { fetchOrders, fetchMe, fetchUsers, deleteOrder, updateOrderStatus } from '../services/api'
 import Badge from '../components/Badge'
 import { useModal } from '../components/Modal'
 import Pagination from '../components/Pagination'
@@ -262,7 +262,41 @@ export default function OrdersList(){
               <tr key={o._id || o.id} className="border-t">
                 <td className="p-2">{o.numero}</td>
                 <td className="p-2">{resolveStore(o)}</td>
-                <td className="p-2"><Badge>{o.status}</Badge></td>
+                <td className="p-2">
+                  {isAdmin ? (
+                    <select
+                      value={o.status}
+                      onChange={async e=>{
+                        const newStatus = e.target.value
+                        showModal({title:'Atualizando', loading:true, hideActions:true})
+                        try{
+                          await updateOrderStatus(o._id || o.id, newStatus)
+                          setOrders(prev=>prev.map(p=> (p._id||p.id)===(o._id||o.id) ? {...p, status:newStatus} : p))
+                          showModal({title:'Status atualizado', body:`Status alterado para ${newStatus}.`, confirmLabel:'Fechar'})
+                        }catch(err){
+                          console.error(err)
+                          showModal({title:'Erro', body:'Não foi possível atualizar o status.', confirmLabel:'Fechar'})
+                        }
+                      }}
+                      className={`px-2 py-1 rounded-full text-sm border-0 cursor-pointer focus:ring-2 focus:ring-blue-500 ${
+                        o.status === 'Pendente' ? 'bg-slate-200 text-slate-800' :
+                        o.status === 'Solicitado' ? 'bg-[#7CB77F]/20 text-[#7CB77F]' :
+                        o.status === 'Em análise' ? 'bg-blue-100 text-blue-800' :
+                        o.status === 'Coleta agendada' ? 'bg-orange-100 text-orange-800' :
+                        o.status === 'Coletado' ? 'bg-violet-100 text-violet-800' :
+                        o.status === 'Concluído' ? 'bg-[#047857]/20 text-[#047857]' :
+                        o.status === 'Cancelado' || o.status === 'Cancelada' ? 'bg-slate-200 text-slate-700' :
+                        o.status === 'Recusado' || o.status === 'Negado' ? 'bg-red-100 text-red-800' :
+                        'bg-slate-100'
+                      }`}
+                    >
+                      <option value="Pendente">Pendente</option>
+                      <option value="Concluído">Pedido OK</option>
+                    </select>
+                  ) : (
+                    <Badge>{o.status}</Badge>
+                  )}
+                </td>
                 <td className="p-2 text-sm text-slate-500">{formatDate(o.createdAt || o.data)}</td>
                 <td className="p-2">
                   <button onClick={()=>navigate(`/pedidos/${o._id || o.id}`)} className="px-3 py-1 bg-primary text-white rounded text-sm hover:brightness-95 mr-2">Visualizar</button>

@@ -58,26 +58,29 @@ export default function AdminProducts(){
   const { showModal } = useModal()
 
   // Carrega lista de produtos
-  useEffect(()=>{
+  function loadProducts(){
     fetch(`${import.meta.env.VITE_API_URL}/api/products`)
       .then(r=>r.json())
       .then(setProducts)
       .catch(()=>setProducts([]))
+  }
+
+  useEffect(()=>{
+    loadProducts()
   }, [])
 
   // ---------- CREATE ----------
   async function handleAdd(){
     const { nome } = newProd
     if(!nome){ alert('Preencha o nome do produto'); return }
-    // gerar próximo código sequencial (ex.: 01, 02, ...)
     const numericCodes = products.map(p=>parseInt(p.codigo,10)).filter(n=>!isNaN(n))
     const maxCode = numericCodes.length ? Math.max(...numericCodes) : 0
     const nextCode = String(maxCode + 1).padStart(2, '0')
     try{
-      const created = await createProductApi({ codigo: nextCode, nome })
-      setProducts(prev=>[created, ...prev])
+      await createProductApi({ codigo: nextCode, nome })
+      loadProducts()
       setNewProd({ nome:'' })
-      showModal({title:'Produto criado',body:`${created.nome} adicionado com código ${nextCode}.`,confirmLabel:'Fechar'})
+      showModal({title:'Produto criado',body:`${nome} adicionado com código ${nextCode}.`,confirmLabel:'Fechar'})
     }catch(e){ console.error(e); alert('Erro ao criar') }
   }
 
@@ -88,10 +91,10 @@ export default function AdminProducts(){
     const { codigo, nome } = editing
     if(!nome){ alert('Nome obrigatório'); return }
     try{
-      const updated = await updateProductApi(codigo, { nome })
-      setProducts(prev=>prev.map(p=>p.codigo===codigo?updated:p))
+      await updateProductApi(codigo, { nome })
+      loadProducts()
       setEditing(null)
-      showModal({title:'Produto atualizado',body:`${updated.nome}`,confirmLabel:'Fechar'})
+      showModal({title:'Produto atualizado',body:`${nome}`,confirmLabel:'Fechar'})
     }catch(e){ console.error(e); alert('Erro ao atualizar') }
   }
 
@@ -100,7 +103,7 @@ export default function AdminProducts(){
     if(!window.confirm('Excluir este produto?')) return
     try{
       await deleteProductApi(codigo)
-      setProducts(prev=>prev.filter(p=>p.codigo!==codigo))
+      loadProducts()
       showModal({title:'Produto excluído',body:`Código ${codigo} removido.`,confirmLabel:'Fechar'})
     }catch(e){ console.error(e); alert('Erro ao excluir') }
   }
@@ -108,16 +111,16 @@ export default function AdminProducts(){
   // ---------- ACTIVATE / DEACTIVATE ----------
   async function handleDeactivate(codigo){
     try{
-      const updated = await deactivateProductApi(codigo)
-      setProducts(prev=>prev.map(p=>p.codigo===codigo?updated:p))
+      await deactivateProductApi(codigo)
+      loadProducts()
       showModal({title:'Produto desativado',body:`Código ${codigo} marcado como inativo.`,confirmLabel:'Fechar'})
     }catch(e){ console.error(e); alert('Erro ao desativar') }
   }
 
   async function handleActivate(codigo){
     try{
-      const updated = await activateProductApi(codigo)
-      setProducts(prev=>prev.map(p=>p.codigo===codigo?updated:p))
+      await activateProductApi(codigo)
+      loadProducts()
       showModal({title:'Produto ativado',body:`Código ${codigo} está em estoque.`,confirmLabel:'Fechar'})
     }catch(e){ console.error(e); alert('Erro ao ativar') }
   }
