@@ -100,12 +100,23 @@ export default function AdminProducts(){
 
   // ---------- DELETE ----------
   async function handleDelete(codigo){
-    if(!window.confirm('Excluir este produto?')) return
-    try{
-      await deleteProductApi(codigo)
-      loadProducts()
-      showModal({title:'Produto excluído',body:`Código ${codigo} removido.`,confirmLabel:'Fechar'})
-    }catch(e){ console.error(e); alert('Erro ao excluir') }
+    showModal({
+      title: 'Confirmar exclusão',
+      body: 'Deseja realmente excluir este produto?',
+      confirmLabel: 'Excluir',
+      cancelLabel: 'Cancelar',
+      onConfirm: async () => {
+        showModal({title:'Excluindo', loading:true, hideActions:true})
+        try{
+          await deleteProductApi(codigo)
+          loadProducts()
+          showModal({title:'Produto excluído', body:`Código ${codigo} removido.`, confirmLabel:'Fechar'})
+        }catch(e){
+          console.error(e)
+          showModal({title:'Erro', body:'Não foi possível excluir o produto.', confirmLabel:'Fechar'})
+        }
+      }
+    })
   }
 
   // ---------- ACTIVATE / DEACTIVATE ----------
