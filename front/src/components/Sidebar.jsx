@@ -66,6 +66,7 @@ export default function Sidebar(){
               <Item to="/pedidos">Registro Pedidos</Item>
               <Item to="/pedidos/novo">Novo Pedido</Item>
               <Item to="/pedidos-fernando">Pedidos Fernando</Item>
+              <Item to="/relatorio-fernando">Relatório Fernando</Item>
               <Item to="/admin/produtos">Estoque</Item>
               <Item to="/reports">Relatórios</Item>
               <Item to="/admin/users">Gerenciar Usuários</Item>
