@@ -248,3 +248,82 @@ export async function registerUser({ username, password, loja }){
 	if(!res.ok) throw new Error('register failed')
 	return res.json()
 }
+
+// ---------- Fernando Orders API ----------
+export async function fetchFernandoOrders(params){
+  if(!params) params = {}
+  const qs = Object.keys(params).filter(k=> params[k] !== undefined && params[k] !== '').map(k=> encodeURIComponent(k)+'='+encodeURIComponent(params[k])).join('&')
+  const path = '/api/fernando-orders' + (qs ? ('?'+qs) : '')
+  const r = await maybeFetch(path)
+  return r ?? []
+}
+
+export async function fetchStoreFernandoOrders(params){
+  if(!params) params = {}
+  const qs = Object.keys(params).filter(k=> params[k] !== undefined && params[k] !== '').map(k=> encodeURIComponent(k)+'='+encodeURIComponent(params[k])).join('&')
+  const path = '/api/fernando-orders/minhas' + (qs ? ('?'+qs) : '')
+  const r = await maybeFetch(path)
+  return r ?? []
+}
+
+export async function fetchFernandoOrderById(id){
+  const r = await maybeFetch(`/api/fernando-orders/${id}`)
+  return r ?? null
+}
+
+export async function fetchFernandoDashboardStats(params = {}){
+  const qs = Object.keys(params).filter(k=> params[k] !== undefined && params[k] !== '').map(k=> encodeURIComponent(k)+'='+encodeURIComponent(params[k])).join('&')
+  const path = '/api/fernando-orders/dashboard/stats' + (qs ? ('?'+qs) : '')
+  const r = await maybeFetch(path)
+  return r ?? { stats: { total: 0, pendente: 0, emAndamento: 0, atendido: 0, cancelado: 0 }, recentPending: [] }
+}
+
+export async function createFernandoOrder(data){
+  const token = getToken()
+  const headers = {'Content-Type':'application/json', ...(token ? {'Authorization':`Bearer ${token}`} : {}) }
+  const res = await fetch(`${API_BASE}/api/fernando-orders`, { method:'POST', headers, body: JSON.stringify(data) })
+  if(!res.ok) throw new Error('create fernando order failed')
+  const txt = await res.text()
+  if(!txt) return {}
+  try{ return JSON.parse(txt) } catch(e){ return {} }
+}
+
+export async function updateFernandoOrderStatus(id, status, observacaoFernando = ''){
+  const token = getToken()
+  const headers = {'Content-Type':'application/json', ...(token ? {'Authorization':`Bearer ${token}`} : {})}
+  const res = await fetch(`${API_BASE}/api/fernando-orders/${id}/status`, { method:'PATCH', headers, body: JSON.stringify({ status, observacaoFernando }) })
+  if(!res.ok) throw new Error('update fernando order status failed')
+  return res.json()
+}
+
+// Registra quem autorizou o pedido (preenchido pelo Fernando)
+export async function patchFernandoOrderAuth(id, autorizadoPor, observacaoFernando = ''){
+  const token = getToken()
+  const headers = {'Content-Type':'application/json', ...(token ? {'Authorization':`Bearer ${token}`} : {})}
+  const res = await fetch(`${API_BASE}/api/fernando-orders/${id}/autorizar`, { method:'PATCH', headers, body: JSON.stringify({ autorizadoPor, observacaoFernando }) })
+  if(!res.ok) throw new Error('patch fernando order auth failed')
+  return res.json()
+}
+
+export async function deleteFernandoOrder(id){
+  const token = getToken()
+  const headers = token ? { 'Authorization': `Bearer ${token}` } : undefined
+  const res = await fetch(`${API_BASE}/api/fernando-orders/${id}`, { method:'DELETE', headers })
+  if(!res.ok) throw new Error('delete fernando order failed')
+  return res.json()
+}
+
+export async function uploadFernandoAttachment(file){
+  if(!API_BASE) return wait({ok:true, name: file?.name})
+  const fd = new FormData()
+  fd.append('anexo', file)
+  const token = getToken()
+  const headers = token ? { 'Authorization': `Bearer ${token}` } : undefined
+  const res = await fetch(`${API_BASE}/api/fernando-uploads/anexo`, { method: 'POST', body: fd, headers })
+  if(!res.ok) throw new Error('upload fernando attachment failed')
+  return res.json()
+}
+
+export async function getFernandoAttachmentUrl(filename){
+  return `${API_BASE}/api/fernando-uploads/anexo/${filename}`
+}

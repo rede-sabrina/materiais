@@ -7,6 +7,9 @@ const colorMap = {
   'Coleta agendada': 'bg-orange-100 text-orange-800',
   Coletado: 'bg-violet-100 text-violet-800',
   Concluído: 'bg-[#047857]/20 text-[#047857]',
+  // Status pedidos Fernando
+  'Em andamento': 'bg-blue-100 text-blue-800',
+  Atendido: 'bg-green-100 text-green-800',
   Cancelado: 'bg-slate-200 text-slate-700',
   Cancelada: 'bg-slate-200 text-slate-700',
   Recusado: 'bg-red-100 text-red-800',

@@ -31,6 +31,8 @@ export default function Sidebar(){
   const token = typeof window !== 'undefined' ? sessionStorage.getItem('token') : null
   const user = parseJwt(token)
   const isAdmin = user && user.role === 'ADMIN'
+  const isFernando = user && user.role === 'FERNANDO'
+  const isLoja = user && user.role === 'LOJA'
 
   return (
     <aside className="w-64 bg-white border-r p-6 flex flex-col justify-between">
@@ -41,11 +43,28 @@ export default function Sidebar(){
         </div>
 
         <nav>
-          <Item to="/">Dashboard</Item>
-          <Item to="/pedidos">Registro Pedidos</Item>
-          <Item to="/pedidos/novo">Novo Pedido</Item>
+          {isFernando && (
+            <>
+              <Item to="/fernando">Dashboard</Item>
+              <Item to="/pedidos-fernando">Pedidos Fernando</Item>
+            </>
+          )}
+          
+          {isLoja && (
+            <>
+              <Item to="/dashboard">Dashboard</Item>
+              <Item to="/pedidos">Registro Pedidos</Item>
+              <Item to="/pedidos/novo">Novo Pedido</Item>
+              <Item to="/pedidos-fernando-loja">Pedidos Fernando</Item>
+            </>
+          )}
+          
           {isAdmin && (
             <>
+              <Item to="/dashboard">Dashboard</Item>
+              <Item to="/pedidos">Registro Pedidos</Item>
+              <Item to="/pedidos/novo">Novo Pedido</Item>
+              <Item to="/pedidos-fernando">Pedidos Fernando</Item>
               <Item to="/admin/produtos">Estoque</Item>
               <Item to="/reports">Relatórios</Item>
               <Item to="/admin/users">Gerenciar Usuários</Item>

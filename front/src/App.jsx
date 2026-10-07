@@ -13,25 +13,34 @@ import DashboardLayout from './layouts/DashboardLayout'
 import SecretRegister from './pages/SecretRegister'
 import AdminUsers from './pages/AdminUsers'
 import AdminProducts from './pages/AdminProducts'
-
+import FernandoDashboard from './pages/FernandoDashboard'
+import FernandoOrdersList from './pages/FernandoOrdersList'
+import StoreFernandoOrders from './pages/StoreFernandoOrders'
+import DashboardRedirect from './pages/DashboardRedirect'
 
 export default function App(){
   return (
     <Routes>
       <Route path="/login" element={<Login/>} />
       <Route path="/secret-register" element={<SecretRegister/>} />
-<Route path="/" element={<DashboardLayout/>}>
-          <Route index element={<DashboardHome/>} />
-          <Route path="reports" element={<Reports/>} />
+      <Route path="/" element={<DashboardLayout/>}>
+        <Route index element={<DashboardRedirect/>} />
+        <Route path="dashboard" element={<DashboardHome/>} />
+        <Route path="reports" element={<Reports/>} />
 
         <Route path="admin/users" element={<AdminUsers/>} />
-          <Route path="admin/produtos" element={<AdminProducts/>} />
+        <Route path="admin/produtos" element={<AdminProducts/>} />
         <Route path="devolucoes" element={<ReturnsList/>} />
         <Route path="devolucoes/novo" element={<NewReturn/>} />
-          <Route path="pedidos" element={<OrdersList/>} />
-          <Route path="pedidos/novo" element={<OrdersCreate/>} />
+        <Route path="pedidos" element={<OrdersList/>} />
+        <Route path="pedidos/novo" element={<OrdersCreate/>} />
         <Route path="devolucoes/:id" element={<ReturnDetail/>} />
-          <Route path="pedidos/:id" element={<OrderDetail/>} />
+        <Route path="pedidos/:id" element={<OrderDetail/>} />
+        
+        {/* Fernando routes */}
+        <Route path="fernando" element={<FernandoDashboard/>} />
+        <Route path="pedidos-fernando" element={<FernandoOrdersList/>} />
+        <Route path="pedidos-fernando-loja" element={<StoreFernandoOrders/>} />
       </Route>
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>

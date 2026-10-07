@@ -1,7 +1,9 @@
 import ProductModel from '../models/Product.js'
 import { readFileSync } from 'fs'
-import { join } from 'path'
+import { join, dirname } from 'path'
+import { fileURLToPath } from 'url'
 
+const __dirname = dirname(fileURLToPath(import.meta.url))
 const productsPath = join(__dirname, '../data/products.json')
 let products = []
 try {

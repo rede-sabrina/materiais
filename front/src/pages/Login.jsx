@@ -16,13 +16,6 @@ export default function Login(){
   async function handleSubmit(e){
     e.preventDefault()
     if(isSubmitting) return
-    if(!API_BASE){
-      // dev fallback
-      sessionStorage.setItem('token', '')
-      sessionStorage.setItem('token_expires_at', String(Date.now() + 2 * 60 * 60 * 1000))
-      nav('/')
-      return
-    }
     try{
       setIsSubmitting(true)
       showModal({ title: 'Entrando', body: 'Validando suas credenciais...', hideActions: true, loading: true })
