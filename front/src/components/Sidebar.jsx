@@ -47,6 +47,7 @@ export default function Sidebar(){
             <>
               <Item to="/fernando">Dashboard</Item>
               <Item to="/pedidos-fernando">Pedidos Fernando</Item>
+              <Item to="/relatorio-fernando">Relatório</Item>
             </>
           )}
           

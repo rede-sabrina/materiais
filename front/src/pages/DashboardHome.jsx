@@ -17,18 +17,23 @@ export default function DashboardHome() {
         if (!me) return
         setIsAdmin(me.role === 'ADMIN')
         
-        const allOrders = await fetchOrders()
-        setOrders(allOrders)
-        
         if (me.role === 'ADMIN') {
           const users = await fetchUsers()
+          const fernandoStores = new Set(users
+            .filter(u => u.role === 'FERNANDO')
+            .map(u => u.loja || u.username)
+            .filter(Boolean))
+          const allOrders = (await fetchOrders()).filter(o => !fernandoStores.has(o.loja))
+          setOrders(allOrders)
           const storeNames = users
-            .filter(u => u.role !== 'ADMIN')
+            .filter(u => u.role !== 'ADMIN' && u.role !== 'FERNANDO')
             .map(u => u.loja || u.username)
             .filter(Boolean)
             .sort()
           setStores(storeNames)
         } else {
+          const allOrders = await fetchOrders()
+          setOrders(allOrders)
           setStores([me.loja || me.username])
         }
         

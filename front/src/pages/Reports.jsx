@@ -24,12 +24,16 @@ export default function Reports(){
         setLoading(false)
         return
       }
-      const allOrders = await fetchOrders()
-      setOrders(allOrders)
-      // load store list from users, excluding ADMIN users
       const users = await fetchUsers()
+      const fernandoStores = new Set(users
+        .filter(u => u.role === 'FERNANDO')
+        .map(u => u.loja || u.username)
+        .filter(Boolean))
+      const allOrders = (await fetchOrders()).filter(o => !fernandoStores.has(o.loja))
+      setOrders(allOrders)
+      // load store list from users, excluding ADMIN and FERNANDO users
       const storeNames = users
-        .filter(u=> (u.loja || u.username) && u.role !== 'ADMIN')
+        .filter(u=> (u.loja || u.username) && u.role !== 'ADMIN' && u.role !== 'FERNANDO')
         .map(u=>u.loja || u.username)
         .filter(Boolean)
         .sort()
