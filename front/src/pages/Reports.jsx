@@ -4,6 +4,7 @@ import { fetchMe, fetchOrders, fetchUsers } from '../services/api'
 
 export default function Reports(){
   const [loading, setLoading] = useState(true)
+  const [isGenerating, setIsGenerating] = useState(false)
   const [accessDenied, setAccessDenied] = useState(false)
   const [orders, setOrders] = useState([])          // all orders fetched
   const [stores, setStores] = useState([])          // store names list
@@ -157,9 +158,13 @@ export default function Reports(){
       alert('Data início não pode ser maior que data fim')
       return
     }
-    setLoading(true)
-    await generateReport()
-    setLoading(false)
+    if(isGenerating) return
+    setIsGenerating(true)
+    try {
+      await generateReport()
+    } finally {
+      setIsGenerating(false)
+    }
   }
 
   function handlePrint(){
@@ -617,7 +622,9 @@ export default function Reports(){
           </div>
         </div>
         <div className="flex gap-2">
-          <button onClick={handleGenerate} className="px-3 py-1 bg-primary text-white rounded">Gerar Relatório</button>
+          <button type="button" onClick={handleGenerate} disabled={isGenerating} className="px-3 py-1 bg-primary text-white rounded disabled:opacity-60 disabled:cursor-wait">
+            {isGenerating ? 'Gerando relatório...' : 'Gerar Relatório'}
+          </button>
           <button onClick={activeTab==='overview' ? handlePrint : handlePrintByStore} className="px-3 py-1 bg-slate-700 text-white rounded">
             {activeTab==='overview' ? 'Imprimir Visão Geral' : 'Imprimir Por Loja'}
           </button>

@@ -8,3 +8,9 @@
 
 /* small helpers */
 .card { @apply bg-white rounded-xl shadow-soft p-4 }
+
+@media print {
+  body { background: white !important; }
+  .report-block { box-shadow: none !important; border: 1px solid #d1d5db; break-inside: avoid; }
+  .report-page { padding: 0 !important; }
+}
