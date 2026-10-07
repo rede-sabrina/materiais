@@ -18,6 +18,25 @@ import FernandoOrdersList from './pages/FernandoOrdersList'
 import StoreFernandoOrders from './pages/StoreFernandoOrders'
 import DashboardRedirect from './pages/DashboardRedirect'
 
+function getSessionRole() {
+  try {
+    const token = sessionStorage.getItem('token')
+    if (!token) return null
+    const payload = token.split('.')[1]
+    const base64 = payload.replace(/-/g, '+').replace(/_/g, '/')
+    return JSON.parse(atob(base64)).role || null
+  } catch (e) {
+    return null
+  }
+}
+
+function RoleRoute({ roles, children }) {
+  const role = getSessionRole()
+  if (!role) return <Navigate to="/login" replace />
+  if (!roles.includes(role)) return <Navigate to="/" replace />
+  return children
+}
+
 export default function App(){
   return (
     <Routes>
@@ -25,22 +44,22 @@ export default function App(){
       <Route path="/secret-register" element={<SecretRegister/>} />
       <Route path="/" element={<DashboardLayout/>}>
         <Route index element={<DashboardRedirect/>} />
-        <Route path="dashboard" element={<DashboardHome/>} />
-        <Route path="reports" element={<Reports/>} />
+        <Route path="dashboard" element={<RoleRoute roles={['ADMIN', 'LOJA']}><DashboardHome/></RoleRoute>} />
+        <Route path="reports" element={<RoleRoute roles={['ADMIN']}><Reports/></RoleRoute>} />
 
-        <Route path="admin/users" element={<AdminUsers/>} />
-        <Route path="admin/produtos" element={<AdminProducts/>} />
-        <Route path="devolucoes" element={<ReturnsList/>} />
-        <Route path="devolucoes/novo" element={<NewReturn/>} />
-        <Route path="pedidos" element={<OrdersList/>} />
-        <Route path="pedidos/novo" element={<OrdersCreate/>} />
-        <Route path="devolucoes/:id" element={<ReturnDetail/>} />
-        <Route path="pedidos/:id" element={<OrderDetail/>} />
+        <Route path="admin/users" element={<RoleRoute roles={['ADMIN']}><AdminUsers/></RoleRoute>} />
+        <Route path="admin/produtos" element={<RoleRoute roles={['ADMIN']}><AdminProducts/></RoleRoute>} />
+        <Route path="devolucoes" element={<RoleRoute roles={['ADMIN', 'LOJA']}><ReturnsList/></RoleRoute>} />
+        <Route path="devolucoes/novo" element={<RoleRoute roles={['ADMIN', 'LOJA']}><NewReturn/></RoleRoute>} />
+        <Route path="pedidos" element={<RoleRoute roles={['ADMIN', 'LOJA']}><OrdersList/></RoleRoute>} />
+        <Route path="pedidos/novo" element={<RoleRoute roles={['ADMIN', 'LOJA']}><OrdersCreate/></RoleRoute>} />
+        <Route path="devolucoes/:id" element={<RoleRoute roles={['ADMIN', 'LOJA']}><ReturnDetail/></RoleRoute>} />
+        <Route path="pedidos/:id" element={<RoleRoute roles={['ADMIN', 'LOJA']}><OrderDetail/></RoleRoute>} />
         
         {/* Fernando routes */}
-        <Route path="fernando" element={<FernandoDashboard/>} />
-        <Route path="pedidos-fernando" element={<FernandoOrdersList/>} />
-        <Route path="pedidos-fernando-loja" element={<StoreFernandoOrders/>} />
+        <Route path="fernando" element={<RoleRoute roles={['FERNANDO', 'ADMIN']}><FernandoDashboard/></RoleRoute>} />
+        <Route path="pedidos-fernando" element={<RoleRoute roles={['FERNANDO', 'ADMIN']}><FernandoOrdersList/></RoleRoute>} />
+        <Route path="pedidos-fernando-loja" element={<RoleRoute roles={['LOJA', 'ADMIN']}><StoreFernandoOrders/></RoleRoute>} />
       </Route>
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
