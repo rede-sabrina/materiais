@@ -22,7 +22,7 @@ export async function login(req, res, next) {
     res.json(data);
   } catch (err) {
     console.error('Login error:', err);
-    res.status(500).json({ message: err.message || 'invalid credentials', stack: err.stack });
+		res.status(401).json({ message: err.message || 'invalid credentials' });
   }
 }
 

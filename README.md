@@ -123,7 +123,7 @@ npm install
 # Configurar variáveis de ambiente
 # Criar arquivo .env com:
 # PORT=3000
-# MONGODB_URI=sua_connection_string
+# MONGO_URI=sua_connection_string
 # JWT_SECRET=seu_secret
 ```
 

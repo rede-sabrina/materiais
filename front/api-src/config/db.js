@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 
 export default async function connectDB(){
-  const uri = process.env.MONGO_URI
+  const uri = process.env.MONGO_URI || process.env.MONGODB_URI
   if(!uri){
     console.log('MONGO_URI not set — skipping MongoDB connection')
     return

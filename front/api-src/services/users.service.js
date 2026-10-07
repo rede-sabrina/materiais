@@ -11,7 +11,8 @@ const users = Array.isArray(usersData) ? [...usersData] : []
 
 export async function findUserByUsername(username){
   try{
-    if(UserModel && UserModel.findOne) return await UserModel.findOne({ username }).lean()
+    const connected = mongoose.connection && mongoose.connection.readyState === 1
+    if(connected && UserModel && UserModel.findOne) return await UserModel.findOne({ username }).lean()
   } catch(e){}
   return users.find(u => u.username === username)
 }
@@ -36,7 +37,8 @@ export async function addUser(user){
 
 export async function getAllUsers(){
   try{
-    if(UserModel && UserModel.find) return await UserModel.find().lean()
+    const connected = mongoose.connection && mongoose.connection.readyState === 1
+    if(connected && UserModel && UserModel.find) return await UserModel.find().lean()
   } catch(e){}
   return users
 }
