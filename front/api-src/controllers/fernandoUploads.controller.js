@@ -4,7 +4,9 @@ import { fileURLToPath } from 'url'
 import { existsSync, mkdirSync } from 'fs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
-const uploadDir = join(__dirname, '../uploads/fernando-orders')
+const uploadDir = process.env.VERCEL
+  ? join('/tmp', 'fernando-orders')
+  : join(__dirname, '../uploads/fernando-orders')
 
 if (!existsSync(uploadDir)) {
   mkdirSync(uploadDir, { recursive: true })
