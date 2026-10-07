@@ -77,7 +77,7 @@ export default async function handler(req, res){
     }
     await ensureDb(connectDB)
   } catch(err){
-    res.statusCode = 500
+    res.statusCode = 503
     res.setHeader('Content-Type', 'application/json')
     const details = debug ? {
       message: err.message,
@@ -86,7 +86,7 @@ export default async function handler(req, res){
       dbModuleKeys: dbMod ? Object.keys(dbMod) : [],
       dbModuleDefaultKeys: dbMod && dbMod.default ? Object.keys(dbMod.default) : []
     } : {}
-    res.end(JSON.stringify({ ok: false, error: 'db_connect_failed', ...details }))
+    res.end(JSON.stringify({ ok: false, error: 'db_connect_failed', message: 'Banco de dados indisponível', ...details }))
     return
   }
   return app(req, res)
