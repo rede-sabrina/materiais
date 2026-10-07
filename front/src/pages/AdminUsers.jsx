@@ -72,6 +72,7 @@ export default function AdminUsers(){
               <select value={form.role} onChange={e=>setForm({...form, role:e.target.value})} className="input">
                 <option value="LOJA">LOJA</option>
                 <option value="ADMIN">ADMIN</option>
+                <option value="FERNANDO">FERNANDO</option>
               </select>
             </div>
             <div className="flex gap-2">

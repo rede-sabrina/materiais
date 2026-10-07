@@ -19,16 +19,7 @@ function criarItemVazio() {
 
 // ─── Componente de linha de item ──────────────────────────────────────────────
 function ItemRow({ item, index, onChange, onRemove, mostrarRemover }) {
-  const [buscaProduto, setBuscaProduto] = useState('')
   const campos = getCamposProduto(item.produto)
-  const termo = buscaProduto.trim().toLocaleLowerCase()
-  const produtosFiltrados = PRODUTOS_FERNANDO.filter(p =>
-    !termo || p.nome.toLocaleLowerCase().includes(termo)
-  )
-  const produtoSelecionado = PRODUTOS_FERNANDO.find(p => p.nome === item.produto)
-  const opcoesProduto = produtoSelecionado && !produtosFiltrados.some(p => p.nome === produtoSelecionado.nome)
-    ? [produtoSelecionado, ...produtosFiltrados]
-    : produtosFiltrados
 
   function handleField(field, value) {
     onChange(index, { ...item, [field]: value })
@@ -57,13 +48,6 @@ function ItemRow({ item, index, onChange, onRemove, mostrarRemover }) {
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Produto <span className="text-red-500">*</span>
           </label>
-          <input
-            type="search"
-            value={buscaProduto}
-            onChange={e => setBuscaProduto(e.target.value)}
-            placeholder="Digite para buscar um item..."
-            className="w-full border px-3 py-2 mb-2 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white"
-          />
           <select
             value={item.produto}
             onChange={e => handleField('produto', e.target.value)}
@@ -71,13 +55,10 @@ function ItemRow({ item, index, onChange, onRemove, mostrarRemover }) {
             className="w-full border px-3 py-2 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white"
           >
             <option value="">Selecione...</option>
-            {opcoesProduto.map(p => (
+            {PRODUTOS_FERNANDO.map(p => (
               <option key={p.nome} value={p.nome}>{p.nome}</option>
             ))}
           </select>
-          <p className="mt-1 text-xs text-gray-400">
-            {termo ? `${produtosFiltrados.length} item(ns) encontrado(s)` : `${PRODUTOS_FERNANDO.length} itens disponíveis`}
-          </p>
         </div>
 
         <div>
