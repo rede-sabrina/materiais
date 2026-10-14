@@ -147,7 +147,7 @@ function ItemRow({ item, index, onChange, onRemove, mostrarRemover, produtos }) 
               type="text"
               value={item.cor}
               onChange={e => handleField('cor', e.target.value)}
-              placeholder="Ex: Preto"
+              placeholder="Ex: Preto, Magenta, etc..."
               className="w-full border px-3 py-2 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
             />
           </div>
