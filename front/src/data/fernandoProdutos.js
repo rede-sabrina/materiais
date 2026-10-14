@@ -10,28 +10,28 @@
  *   descricaoOutros → OUTROS
  */
 export const PRODUTOS_FERNANDO = [
-  { nome: 'Tapete',                                       campos: ['tamanho'] },
-  { nome: 'Filtro para bebedouro',                        campos: [] },
-  { nome: 'Cadeira',                                      campos: [] },
-  { nome: 'Cesta',                                        campos: [] },
   { nome: 'Alça para cesta',                              campos: [] },
   { nome: 'Bip com cabo',                                 campos: [] },
   { nome: 'Bip sem fio',                                  campos: [] },
-  { nome: 'Etiqueta posologia',                           campos: [] },
-  { nome: 'Cavalete de sinalização de piso molhado',      campos: [] },
-  { nome: 'Caneta para identificar nota falsa',           campos: [] },
-  { nome: 'Suporte para luz negra',                       campos: [] },
-  { nome: 'Extensão',                                     campos: [] },
-  { nome: 'Palets',                                       campos: [] },
-  { nome: 'Escada',                                       campos: ['degraus'] },
-  { nome: 'Cordão para crachá',                           campos: [] },
-  { nome: 'Mouse',                                        campos: [] },
-  { nome: 'Teclado',                                      campos: [] },
-  { nome: 'Luz negra',                                    campos: [] },
-  { nome: 'Adesivo para techado',                         campos: [] },
-  { nome: 'Fonte USB',                                    campos: [] },
-  { nome: 'Tinta para impressora',                        campos: ['cor', 'modelo'] },
   { nome: 'Caixinha de som',                              campos: [] },
+  { nome: 'Cadeira',                                      campos: [] },
+  { nome: 'Caneta para identificar nota falsa',           campos: [] },
+  { nome: 'Cavalete de sinalização de piso molhado',      campos: [] },
+  { nome: 'Cesta',                                        campos: [] },
+  { nome: 'Cordão para crachá',                           campos: [] },
+  { nome: 'Adesivo para teclado',                         campos: [] },
+  { nome: 'Escada',                                       campos: ['degraus'] },
+  { nome: 'Etiqueta posologia',                           campos: [] },
+  { nome: 'Extensão',                                     campos: [] },
+  { nome: 'Filtro para bebedouro',                        campos: ['modeloFiltro'] },
+  { nome: 'Fonte USB',                                    campos: [] },
+  { nome: 'Luz negra',                                    campos: [] },
+  { nome: 'Mouse',                                        campos: [] },
+  { nome: 'Palets',                                       campos: [] },
+  { nome: 'Suporte para luz negra',                       campos: [] },
+  { nome: 'Tapete',                                       campos: ['tamanho'] },
+  { nome: 'Teclado',                                      campos: [] },
+  { nome: 'Tinta para impressora',                        campos: ['cor', 'modelo'] },
   { nome: 'Outros',                                       campos: ['descricaoOutros'] },
 ]
 
@@ -51,6 +51,14 @@ export const STATUS_FERNANDO = ['Pendente', 'Em andamento', 'Atendido', 'Cancela
 export function getCamposProduto(nomeProduto) {
   const p = PRODUTOS_FERNANDO.find(p => p.nome === nomeProduto)
   return p ? p.campos : []
+}
+
+export function ordenarProdutosFernando(produtos = PRODUTOS_FERNANDO) {
+  return [...produtos].sort((a, b) => {
+    if (a.nome === 'Outros') return 1
+    if (b.nome === 'Outros') return -1
+    return a.nome.localeCompare(b.nome, 'pt-BR', { sensitivity: 'base' })
+  })
 }
 
 /** Formata a lista de itens para exibição em texto */

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import { fetchStoreFernandoOrders, createFernandoOrder } from '../services/api'
+import { fetchStoreFernandoOrders, createFernandoOrder, fetchFernandoProducts } from '../services/api'
 import { useModal } from '../components/Modal'
 import Badge from '../components/Badge'
-import { PRODUTOS_FERNANDO, OPCOES_DEGRAUS, getCamposProduto, formatarItens } from '../data/fernandoProdutos'
+import { PRODUTOS_FERNANDO, OPCOES_DEGRAUS, getCamposProduto, formatarItens, ordenarProdutosFernando } from '../data/fernandoProdutos'
 
 // ─── Item em branco ────────────────────────────────────────────────────────────
 function criarItemVazio() {
@@ -55,7 +55,7 @@ function ItemRow({ item, index, onChange, onRemove, mostrarRemover }) {
             className="w-full border px-3 py-2 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white"
           >
             <option value="">Selecione...</option>
-            {PRODUTOS_FERNANDO.map(p => (
+            {produtosFernando.map(p => (
               <option key={p.nome} value={p.nome}>{p.nome}</option>
             ))}
           </select>
@@ -87,6 +87,20 @@ function ItemRow({ item, index, onChange, onRemove, mostrarRemover }) {
             value={item.tamanho}
             onChange={e => handleField('tamanho', e.target.value)}
             placeholder="Ex: 1,5m x 2m"
+            className="w-full border px-3 py-2 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+          />
+        </div>
+      )}
+
+        {/* Filtro para bebedouro → Modelo */}
+      {campos.includes('modeloFiltro') && (
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Modelo do filtro</label>
+          <input
+            type="text"
+            value={item.modeloFiltro}
+            onChange={e => handleField('modeloFiltro', e.target.value)}
+            placeholder="Ex: Filtro 1"
             className="w-full border px-3 py-2 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
           />
         </div>
@@ -161,6 +175,7 @@ function ItemRow({ item, index, onChange, onRemove, mostrarRemover }) {
 
 // ─── Componente principal ─────────────────────────────────────────────────────
 export default function StoreFernandoOrders() {
+  const [produtosFernando, setProdutosFernando] = useState(ordenarProdutosFernando())
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(false)
   const [showForm, setShowForm] = useState(false)
@@ -169,7 +184,24 @@ export default function StoreFernandoOrders() {
   const [submitting, setSubmitting] = useState(false)
   const { showModal } = useModal()
 
-  useEffect(() => { loadOrders() }, [])
+  useEffect(() => {
+    loadOrders()
+    loadFernandoProducts()
+  }, [])
+
+  async function loadFernandoProducts() {
+    try {
+      const data = await fetchFernandoProducts()
+      if (Array.isArray(data) && data.length) {
+        setProdutosFernando(ordenarProdutosFernando(data.map(p => ({
+          ...p,
+          campos: getCamposProduto(p.nome)
+        }))))
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }
 
   async function loadOrders() {
     setLoading(true)

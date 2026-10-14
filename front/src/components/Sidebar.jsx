@@ -48,6 +48,7 @@ export default function Sidebar(){
               <Item to="/fernando">Dashboard</Item>
               <Item to="/pedidos-fernando">Pedidos Fernando</Item>
               <Item to="/relatorio-fernando">Relatório</Item>
+              <Item to="/estoque-fernando">Estoque</Item>
             </>
           )}
           
@@ -72,6 +73,7 @@ export default function Sidebar(){
                 <div className="px-4 mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">Área do Fernando</div>
                 <Item to="/pedidos-fernando">Pedidos Fernando</Item>
                 <Item to="/relatorio-fernando">Relatório Fernando</Item>
+                <Item to="/estoque-fernando">Estoque Fernando</Item>
               </div>
             </>
           )}

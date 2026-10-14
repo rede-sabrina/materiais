@@ -288,6 +288,25 @@ export async function createFernandoOrder(data){
   try{ return JSON.parse(txt) } catch(e){ return {} }
 }
 
+export async function fetchFernandoProducts(){
+  const r = await maybeFetch('/api/fernando-products')
+  return r ?? []
+}
+
+export async function createFernandoProduct(nome){
+  const r = await maybeFetch('/api/fernando-products', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ nome })
+  })
+  return r
+}
+
+export async function deleteFernandoProduct(id){
+  const r = await maybeFetch(`/api/fernando-products/${encodeURIComponent(id)}`, { method: 'DELETE' })
+  return r
+}
+
 export async function updateFernandoOrderStatus(id, status, observacaoFernando = ''){
   const token = getToken()
   const headers = {'Content-Type':'application/json', ...(token ? {'Authorization':`Bearer ${token}`} : {})}

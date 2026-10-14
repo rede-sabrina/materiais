@@ -18,6 +18,7 @@ import FernandoOrdersList from './pages/FernandoOrdersList'
 import StoreFernandoOrders from './pages/StoreFernandoOrders'
 import DashboardRedirect from './pages/DashboardRedirect'
 import FernandoReport from './pages/FernandoReport'
+import FernandoProducts from './pages/FernandoProducts'
 
 function getSessionRole() {
   try {
@@ -61,6 +62,7 @@ export default function App(){
         <Route path="fernando" element={<RoleRoute roles={['FERNANDO', 'ADMIN']}><FernandoDashboard/></RoleRoute>} />
         <Route path="pedidos-fernando" element={<RoleRoute roles={['FERNANDO', 'ADMIN']}><FernandoOrdersList/></RoleRoute>} />
         <Route path="relatorio-fernando" element={<RoleRoute roles={['FERNANDO', 'ADMIN']}><FernandoReport/></RoleRoute>} />
+        <Route path="estoque-fernando" element={<RoleRoute roles={['FERNANDO', 'ADMIN']}><FernandoProducts/></RoleRoute>} />
         <Route path="pedidos-fernando-loja" element={<RoleRoute roles={['LOJA', 'ADMIN']}><StoreFernandoOrders/></RoleRoute>} />
       </Route>
       <Route path="*" element={<Navigate to="/login" replace />} />

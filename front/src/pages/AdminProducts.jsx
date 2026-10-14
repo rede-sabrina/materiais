@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useModal } from '../components/Modal'
+import { createFernandoProduct, deleteFernandoProduct, fetchFernandoProducts } from '../services/api'
+import { ordenarProdutosFernando } from '../data/fernandoProdutos'
 
 // ---------- API helpers ----------
 async function createProductApi({ codigo, nome }){
@@ -55,6 +57,8 @@ export default function AdminProducts(){
   const [newProd, setNewProd] = useState({ nome:'' })
   const [editing, setEditing] = useState(null) // { codigo, nome }
   const [page, setPage] = useState(1)
+  const [fernandoProducts, setFernandoProducts] = useState([])
+  const [fernandoName, setFernandoName] = useState('')
   const { showModal } = useModal()
 
   // Carrega lista de produtos
@@ -67,7 +71,50 @@ export default function AdminProducts(){
 
   useEffect(()=>{
     loadProducts()
+    loadFernandoProducts()
   }, [])
+
+  async function loadFernandoProducts() {
+    try {
+      const data = await fetchFernandoProducts()
+      setFernandoProducts(ordenarProdutosFernando(data))
+    } catch (e) {
+      console.error(e)
+      setFernandoProducts([])
+    }
+  }
+
+  async function handleAddFernandoProduct() {
+    if (!fernandoName.trim()) { alert('Preencha o nome do produto'); return }
+    try {
+      await createFernandoProduct(fernandoName.trim())
+      setFernandoName('')
+      await loadFernandoProducts()
+      showModal({ title: 'Item adicionado', body: 'O item já está disponível para as lojas.', confirmLabel: 'Fechar' })
+    } catch (e) {
+      console.error(e)
+      showModal({ title: 'Erro', body: 'Não foi possível adicionar o item. Ele pode já existir.', confirmLabel: 'Fechar' })
+    }
+  }
+
+  async function handleDeleteFernandoProduct(product) {
+    showModal({
+      title: 'Excluir item do Fernando',
+      body: `Remover "${product.nome}" da lista de pedidos?`,
+      confirmLabel: 'Excluir',
+      cancelLabel: 'Cancelar',
+      onConfirm: async () => {
+        try {
+          await deleteFernandoProduct(product._id || product.codigo || product.nome)
+          await loadFernandoProducts()
+          showModal({ title: 'Item removido', body: 'O item não aparecerá mais para as lojas.', confirmLabel: 'Fechar' })
+        } catch (e) {
+          console.error(e)
+          showModal({ title: 'Erro', body: 'Não foi possível remover o item.', confirmLabel: 'Fechar' })
+        }
+      }
+    })
+  }
 
   // ---------- CREATE ----------
   async function handleAdd(){
@@ -144,6 +191,26 @@ export default function AdminProducts(){
     <div className="space-y-4">
       <h2 className="text-xl font-semibold">Gerenciar Produtos (ADMIN)</h2>
       <div className="card p-4">
+        <h3 className="font-medium mb-2">Itens disponíveis para pedidos ao Fernando</h3>
+        <div className="flex items-center gap-2 mb-3">
+          <input placeholder="Nome do item" className="border px-2 py-1 rounded w-64"
+                 value={fernandoName} onChange={e => setFernandoName(e.target.value)} />
+          <button onClick={handleAddFernandoProduct}
+                  className="px-3 py-1 bg-primary text-white rounded">Adicionar item</button>
+        </div>
+        <div className="flex flex-wrap gap-2 mb-6">
+          {fernandoProducts.map(product => (
+            <span key={product._id || product.codigo || product.nome}
+                  className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-sm">
+              {product.nome}
+              {product.nome !== 'Outros' && (
+                <button type="button" onClick={() => handleDeleteFernandoProduct(product)}
+                        className="text-red-600 hover:text-red-800" aria-label={`Excluir ${product.nome}`}>×</button>
+              )}
+            </span>
+          ))}
+        </div>
+        <hr className="my-6" />
         {/* ADIÇÃO */}
         <h3 className="font-medium mb-2">Adicionar novo produto</h3>
 <div className="flex items-center gap-2 mb-4">

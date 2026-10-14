@@ -10,6 +10,7 @@ import ordersRoutes from "./orders.routes.js";
 import auditRoutes from "./audit.routes.js";
 import fernandoOrdersRoutes from "./fernandoOrders.routes.js";
 import fernandoUploadsRoutes from "./fernandoUploads.routes.js";
+import fernandoProductsRoutes from "./fernandoProducts.routes.js";
 
 const router = Router()
 
@@ -18,6 +19,7 @@ router.use('/returns', returnsRoutes)
 router.use('/orders', ordersRoutes)
 router.use('/fernando-orders', fernandoOrdersRoutes)
 router.use('/fernando-uploads', fernandoUploadsRoutes)
+router.use('/fernando-products', fernandoProductsRoutes)
 router.use('/products', productsRoutes)
 router.use('/uploads', uploadsRoutes)
 router.use('/users', usersRoutes)
