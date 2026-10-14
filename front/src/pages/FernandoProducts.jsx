@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useModal } from '../components/Modal'
 import { createFernandoProduct, deleteFernandoProduct, fetchFernandoProducts, updateFernandoProduct } from '../services/api'
-import { ordenarProdutosFernando } from '../data/fernandoProdutos'
+import { getCamposConfiguradosProduto, ordenarProdutosFernando } from '../data/fernandoProdutos'
 
 export default function FernandoProducts() {
   const [products, setProducts] = useState([])
@@ -55,7 +55,9 @@ export default function FernandoProducts() {
   }
 
   function toggleField(product, field) {
-    const current = product.campos || []
+    const nativeFields = getCamposConfiguradosProduto({ nome: product.nome, campos: [] })
+    if (nativeFields.includes(field)) return
+    const current = getCamposConfiguradosProduto(product)
     const campos = current.includes(field) ? current.filter(item => item !== field) : [...current, field]
     setEditing({ ...product, campos })
   }
@@ -110,17 +112,19 @@ export default function FernandoProducts() {
               <tbody>
                 {products.map(product => {
                   const current = editing?.nome === product.nome ? editing : product
+                  const nativeFields = getCamposConfiguradosProduto({ nome: product.nome, campos: [] })
+                  const configuredFields = getCamposConfiguradosProduto(current)
                   return (
                     <tr key={product._id || product.codigo || product.nome} className="border-b">
                       <td className="p-2 font-medium">{product.nome}</td>
                       <td className="p-2">
                         <div className="flex flex-wrap gap-3">
-                          {['descricao', 'modelo', 'tamanho', 'cor', 'observacao'].map(field => (
+                          {['descricao', 'modelo', 'tamanho', 'cor', 'observacao', 'degraus', 'modeloFiltro', 'descricaoOutros'].map(field => (
                             <label key={field} className="flex items-center gap-1">
-                              <input type="checkbox" checked={(current.campos || []).includes(field)}
-                                     disabled={product.nome === 'Outros'}
-                                     onChange={() => toggleField(product, field)} />
-                              {field}
+                              <input type="checkbox" checked={configuredFields.includes(field)}
+                                     disabled={nativeFields.includes(field)}
+                                     onChange={() => toggleField(current, field)} />
+                              {field === 'descricaoOutros' ? 'Descrição (Outros)' : field === 'modeloFiltro' ? 'Modelo do filtro' : field}
                             </label>
                           ))}
                         </div>

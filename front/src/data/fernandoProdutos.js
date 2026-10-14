@@ -53,6 +53,13 @@ export function getCamposProduto(nomeProduto) {
   return p ? p.campos : []
 }
 
+export function getCamposConfiguradosProduto(produto) {
+  return [...new Set([
+    ...getCamposProduto(produto?.nome),
+    ...(Array.isArray(produto?.campos) ? produto.campos : []),
+  ])]
+}
+
 export function ordenarProdutosFernando(produtos = PRODUTOS_FERNANDO) {
   return [...produtos].sort((a, b) => {
     if (a.nome === 'Outros') return 1

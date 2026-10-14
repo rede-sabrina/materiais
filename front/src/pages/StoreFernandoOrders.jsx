@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { fetchStoreFernandoOrders, createFernandoOrder, fetchFernandoProducts } from '../services/api'
 import { useModal } from '../components/Modal'
 import Badge from '../components/Badge'
-import { PRODUTOS_FERNANDO, OPCOES_DEGRAUS, getCamposProduto, formatarItens, ordenarProdutosFernando } from '../data/fernandoProdutos'
+import { PRODUTOS_FERNANDO, OPCOES_DEGRAUS, getCamposConfiguradosProduto, getCamposProduto, formatarItens, ordenarProdutosFernando } from '../data/fernandoProdutos'
 
 const rotulosCampos = {
   descricao: 'Descrição',
@@ -28,7 +28,7 @@ function criarItemVazio() {
 // ─── Componente de linha de item ──────────────────────────────────────────────
 function ItemRow({ item, index, onChange, onRemove, mostrarRemover, produtos }) {
   const produto = produtos.find(p => p.nome === item.produto)
-  const campos = produto?.campos || getCamposProduto(item.produto)
+  const campos = getCamposConfiguradosProduto(produto || { nome: item.produto })
   const camposGenericos = campos.filter(campo => !['tamanho', 'modeloFiltro', 'degraus', 'cor', 'modelo', 'descricaoOutros'].includes(campo))
 
   function handleField(field, value) {
@@ -219,7 +219,7 @@ export default function StoreFernandoOrders() {
       if (Array.isArray(data) && data.length) {
         setProdutosFernando(ordenarProdutosFernando(data.map(p => ({
           ...p,
-          campos: p.campos?.length ? p.campos : getCamposProduto(p.nome)
+          campos: getCamposConfiguradosProduto(p)
         }))))
       }
     } catch (e) {
