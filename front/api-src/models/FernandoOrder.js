@@ -9,7 +9,9 @@ const ItemPedidoSchema = new mongoose.Schema({
   degraus: { type: String, default: '' },           // ESCADA
   cor: { type: String, default: '' },               // TINTA PARA IMPRESSORA
   modelo: { type: String, default: '' },            // TINTA PARA IMPRESSORA
-  descricaoOutros: { type: String, default: '' }    // OUTROS
+  descricaoOutros: { type: String, default: '' },   // OUTROS
+  descricao: { type: String, default: '' },         // Campo extra configurável
+  observacao: { type: String, default: '' }         // Campo extra configurável
 }, { _id: false })
 
 const FernandoOrderSchema = new mongoose.Schema({

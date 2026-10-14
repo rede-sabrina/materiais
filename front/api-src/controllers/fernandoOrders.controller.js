@@ -100,7 +100,9 @@ export async function createNewFernandoOrder(req, res, next) {
         degraus: item.degraus?.trim() || '',
         cor: item.cor?.trim() || '',
         modelo: item.modelo?.trim() || '',
-        descricaoOutros: item.descricaoOutros?.trim() || ''
+        descricaoOutros: item.descricaoOutros?.trim() || '',
+        descricao: item.descricao?.trim() || '',
+        observacao: item.observacao?.trim() || ''
       })),
       observacoes: (observacoes || '').trim()
     }
