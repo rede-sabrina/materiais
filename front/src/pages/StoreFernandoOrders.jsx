@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { fetchStoreFernandoOrders, createFernandoOrder, fetchFernandoProducts } from '../services/api'
 import { useModal } from '../components/Modal'
 import Badge from '../components/Badge'
-import { PRODUTOS_FERNANDO, OPCOES_DEGRAUS, getCamposConfiguradosProduto, getCamposProduto, formatarItens, ordenarProdutosFernando } from '../data/fernandoProdutos'
+import { OPCOES_DEGRAUS, getCamposConfiguradosProduto, formatarItens, ordenarProdutosFernando } from '../data/fernandoProdutos'
 
 const rotulosCampos = {
   descricao: 'Descrição',

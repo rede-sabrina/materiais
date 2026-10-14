@@ -23,7 +23,7 @@ export const PRODUTOS_FERNANDO = [
   { nome: 'Escada',                                       campos: ['degraus'] },
   { nome: 'Etiqueta posologia',                           campos: [] },
   { nome: 'Extensão',                                     campos: [] },
-  { nome: 'Filtro para bebedouro',                        campos: ['modeloFiltro'] },
+  { nome: 'Filtro para bebedouro',                        campos: ['descricao', 'modeloFiltro'] },
   { nome: 'Fonte USB',                                    campos: [] },
   { nome: 'Luz negra',                                    campos: [] },
   { nome: 'Mouse',                                        campos: [] },
@@ -59,6 +59,17 @@ export function getCamposConfiguradosProduto(produto) {
     ...(Array.isArray(produto?.campos) ? produto.campos : []),
   ])]
 }
+
+export const CAMPOS_PRODUTO = [
+  { nome: 'descricao', rotulo: 'Descrição' },
+  { nome: 'modelo', rotulo: 'Modelo' },
+  { nome: 'tamanho', rotulo: 'Tamanho' },
+  { nome: 'cor', rotulo: 'Cor' },
+  { nome: 'observacao', rotulo: 'Observação' },
+  { nome: 'degraus', rotulo: 'Degraus' },
+  { nome: 'modeloFiltro', rotulo: 'Modelo do filtro' },
+  { nome: 'descricaoOutros', rotulo: 'Descrição (Outros)' },
+]
 
 export function ordenarProdutosFernando(produtos = PRODUTOS_FERNANDO) {
   return [...produtos].sort((a, b) => {
