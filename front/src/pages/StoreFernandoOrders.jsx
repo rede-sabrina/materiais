@@ -4,6 +4,14 @@ import { useModal } from '../components/Modal'
 import Badge from '../components/Badge'
 import { PRODUTOS_FERNANDO, OPCOES_DEGRAUS, getCamposProduto, formatarItens, ordenarProdutosFernando } from '../data/fernandoProdutos'
 
+const rotulosCampos = {
+  descricao: 'Descrição',
+  modelo: 'Modelo',
+  tamanho: 'Tamanho',
+  cor: 'Cor',
+  observacao: 'Observação',
+}
+
 // ─── Item em branco ────────────────────────────────────────────────────────────
 function criarItemVazio() {
   return {
@@ -14,14 +22,6 @@ function criarItemVazio() {
     cor: '',
     modelo: '',
     descricaoOutros: '',
-  }
-
-  const rotulosCampos = {
-    descricao: 'Descrição',
-    modelo: 'Modelo',
-    tamanho: 'Tamanho',
-    cor: 'Cor',
-    observacao: 'Observação',
   }
 }
 
