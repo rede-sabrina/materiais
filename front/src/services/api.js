@@ -293,13 +293,21 @@ export async function fetchFernandoProducts(){
   return r ?? []
 }
 
-export async function createFernandoProduct(nome){
+export async function createFernandoProduct(nome, campos = []){
   const r = await maybeFetch('/api/fernando-products', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ nome })
+    body: JSON.stringify({ nome, campos })
   })
   return r
+}
+
+export async function updateFernandoProduct(id, campos){
+  return maybeFetch(`/api/fernando-products/${encodeURIComponent(id)}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ campos })
+  })
 }
 
 export async function deleteFernandoProduct(id){

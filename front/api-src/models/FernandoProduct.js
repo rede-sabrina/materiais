@@ -2,6 +2,7 @@ import mongoose from 'mongoose'
 
 const FernandoProductSchema = new mongoose.Schema({
   nome: { type: String, required: true, unique: true, trim: true },
+  campos: { type: [String], default: [] },
   active: { type: Boolean, default: true }
 }, { timestamps: true })
 

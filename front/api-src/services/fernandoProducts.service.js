@@ -22,11 +22,11 @@ export async function getFernandoProducts() {
   return fallbackProducts.filter(p => p.active !== false)
 }
 
-export async function createFernandoProduct(nome) {
+export async function createFernandoProduct(nome, campos = []) {
   const normalized = nome.trim()
   if (!normalized) throw new Error('Nome do produto é obrigatório')
   try {
-    if (FernandoProductModel.create) return (await FernandoProductModel.create({ nome: normalized })).toObject()
+    if (FernandoProductModel.create) return (await FernandoProductModel.create({ nome: normalized, campos })).toObject()
   } catch (err) {
     if (err.code === 11000) throw new Error('Produto já cadastrado')
     console.error('Erro ao cadastrar produto do Fernando:', err.message)
@@ -34,8 +34,26 @@ export async function createFernandoProduct(nome) {
   if (fallbackProducts.some(p => p.nome.toLowerCase() === normalized.toLowerCase() && p.active !== false)) {
     throw new Error('Produto já cadastrado')
   }
-  const product = { nome: normalized, codigo: `F${Date.now()}`, active: true }
+  const product = { nome: normalized, campos, codigo: `F${Date.now()}`, active: true }
   fallbackProducts.push(product)
+  return product
+}
+
+export async function updateFernandoProduct(id, updates) {
+  const campos = Array.isArray(updates.campos) ? updates.campos : []
+  try {
+    if (FernandoProductModel.findOneAndUpdate) {
+      const updated = await FernandoProductModel.findOneAndUpdate(
+        { _id: id }, { campos }, { new: true, runValidators: true }
+      ).lean()
+      return updated
+    }
+  } catch (err) {
+    console.error('Erro ao atualizar campos do produto do Fernando:', err.message)
+  }
+  const product = fallbackProducts.find(p => p.codigo === id || p.nome === id)
+  if (!product) return null
+  product.campos = campos
   return product
 }
 

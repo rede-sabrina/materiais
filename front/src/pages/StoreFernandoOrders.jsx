@@ -15,11 +15,21 @@ function criarItemVazio() {
     modelo: '',
     descricaoOutros: '',
   }
+
+  const rotulosCampos = {
+    descricao: 'Descrição',
+    modelo: 'Modelo',
+    tamanho: 'Tamanho',
+    cor: 'Cor',
+    observacao: 'Observação',
+  }
 }
 
 // ─── Componente de linha de item ──────────────────────────────────────────────
-function ItemRow({ item, index, onChange, onRemove, mostrarRemover }) {
-  const campos = getCamposProduto(item.produto)
+function ItemRow({ item, index, onChange, onRemove, mostrarRemover, produtos }) {
+  const produto = produtos.find(p => p.nome === item.produto)
+  const campos = produto?.campos || getCamposProduto(item.produto)
+  const camposGenericos = campos.filter(campo => !['tamanho', 'modeloFiltro', 'degraus', 'cor', 'modelo', 'descricaoOutros'].includes(campo))
 
   function handleField(field, value) {
     onChange(index, { ...item, [field]: value })
@@ -55,7 +65,7 @@ function ItemRow({ item, index, onChange, onRemove, mostrarRemover }) {
             className="w-full border px-3 py-2 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white"
           >
             <option value="">Selecione...</option>
-            {produtosFernando.map(p => (
+            {produtos.map(p => (
               <option key={p.nome} value={p.nome}>{p.nome}</option>
             ))}
           </select>
@@ -169,6 +179,20 @@ function ItemRow({ item, index, onChange, onRemove, mostrarRemover }) {
           />
         </div>
       )}
+
+      {camposGenericos.map(campo => (
+        <div key={campo}>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            {rotulosCampos[campo] || campo}
+          </label>
+          <input
+            type="text"
+            value={item[campo] || ''}
+            onChange={e => handleField(campo, e.target.value)}
+            className="w-full border px-3 py-2 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+          />
+        </div>
+      ))}
     </div>
   )
 }
@@ -195,7 +219,7 @@ export default function StoreFernandoOrders() {
       if (Array.isArray(data) && data.length) {
         setProdutosFernando(ordenarProdutosFernando(data.map(p => ({
           ...p,
-          campos: getCamposProduto(p.nome)
+          campos: p.campos?.length ? p.campos : getCamposProduto(p.nome)
         }))))
       }
     } catch (e) {
@@ -267,13 +291,8 @@ export default function StoreFernandoOrders() {
     try {
       await createFernandoOrder({
         itens: itens.map(it => ({
-          produto: it.produto,
+          ...it,
           quantidade: Number(it.quantidade),
-          tamanho: it.tamanho || '',
-          degraus: it.degraus || '',
-          cor: it.cor || '',
-          modelo: it.modelo || '',
-          descricaoOutros: it.descricaoOutros || '',
         })),
         observacoes: observacoes.trim()
       })
@@ -469,6 +488,7 @@ export default function StoreFernandoOrders() {
                       onChange={handleItemChange}
                       onRemove={removeItem}
                       mostrarRemover={itens.length > 1}
+                      produtos={produtosFernando}
                     />
                   ))}
                 </div>

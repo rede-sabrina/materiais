@@ -70,6 +70,8 @@ export function formatarItens(itens = []) {
     if (it.cor)             extras.push(`Cor: ${it.cor}`)
     if (it.modelo)          extras.push(`Modelo: ${it.modelo}`)
     if (it.descricaoOutros) extras.push(it.descricaoOutros)
+    if (it.descricao)       extras.push(`Descrição: ${it.descricao}`)
+    if (it.observacao)      extras.push(`Observação: ${it.observacao}`)
     const extra = extras.length ? ` (${extras.join(', ')})` : ''
     return `${it.quantidade}x ${it.produto}${extra}`
   })
