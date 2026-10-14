@@ -6,8 +6,8 @@ import { ordenarProdutosFernando } from '../data/fernandoProdutos'
 export default function FernandoProducts() {
   const [products, setProducts] = useState([])
   const [name, setName] = useState('')
-    const [fields, setFields] = useState([])
-    const [editing, setEditing] = useState(null)
+  const [fields, setFields] = useState([])
+  const [editing, setEditing] = useState(null)
   const [loading, setLoading] = useState(true)
   const { showModal } = useModal()
 
@@ -41,22 +41,23 @@ export default function FernandoProducts() {
       showModal({ title: 'Erro', body: 'Não foi possível adicionar o item. Ele pode já existir.', confirmLabel: 'Fechar' })
     }
 
-    async function saveFields(product) {
-      try {
-        await updateFernandoProduct(product._id || product.codigo || product.nome, product.campos || [])
-        setEditing(null)
-        await loadProducts()
-      } catch (error) {
-        console.error(error)
-        showModal({ title: 'Erro', body: 'Não foi possível salvar os campos extras.', confirmLabel: 'Fechar' })
-      }
-    }
+  }
 
-    function toggleField(product, field) {
-      const current = product.campos || []
-      const campos = current.includes(field) ? current.filter(item => item !== field) : [...current, field]
-      setEditing({ ...product, campos })
+  async function saveFields(product) {
+    try {
+      await updateFernandoProduct(product._id || product.codigo || product.nome, product.campos || [])
+      setEditing(null)
+      await loadProducts()
+    } catch (error) {
+      console.error(error)
+      showModal({ title: 'Erro', body: 'Não foi possível salvar os campos extras.', confirmLabel: 'Fechar' })
     }
+  }
+
+  function toggleField(product, field) {
+    const current = product.campos || []
+    const campos = current.includes(field) ? current.filter(item => item !== field) : [...current, field]
+    setEditing({ ...product, campos })
   }
 
   function removeProduct(product) {
